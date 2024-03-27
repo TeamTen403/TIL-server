@@ -1,12 +1,14 @@
 package com.teamten.til.tilog.entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import com.teamten.til.tiler.entity.TIler;
+import com.teamten.til.tilog.dto.TilogRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -16,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +40,7 @@ public class Tilog {
 	private String title;
 	private String content;
 	private String thumbnail;
-	private String regYm;
+	private String regYmd;
 	@JoinColumn(name = "tag_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Tag tag;
@@ -57,4 +60,17 @@ public class Tilog {
 		return tag.getName();
 	}
 
+	@PrePersist
+	public void onPrePersist() {
+		this.regYmd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+	}
+
+	public void editTilog(TilogRequest request) {
+		this.title = request.getTitle();
+		this.content = request.getContent();
+		this.thumbnail = request.getThumbnail();
+		this.tag = Tag.builder()
+			.id(request.getTagId())
+			.build();
+	}
 }

@@ -37,12 +37,19 @@ public class TilogInfo implements Serializable {
 			.build();
 	}
 
-	public void setIsLiked(boolean isLiked) {
-		this.isLiked = isLiked;
-	}
-
-	public void setIsBookmarked(boolean isBookmarked) {
-		this.isBookmarked = isBookmarked;
+	public static TilogInfo of(Tilog tilog, boolean isLiked, boolean isBookmarked) {
+		return TilogInfo.builder()
+			.id(tilog.getId())
+			.title(tilog.getTitle())
+			.nickname(tilog.getUser().getNickName())
+			.thumbnailUrl(tilog.getThumbnail())
+			.tagName(tilog.getTagName())
+			.likeCount(tilog.getLikes())
+			.regYmdt(tilog.getRegYmdt())
+			.modYmdt(tilog.getModYmdt())
+			.isLiked(isLiked)
+			.isBookmarked(isBookmarked)
+			.build();
 	}
 
 }
