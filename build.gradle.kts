@@ -22,18 +22,24 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("com.h2database:h2")
+
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+//    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+//    implementation("org.springframework.boot:spring-boot-starter-security")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+//    testImplementation("org.springframework.security:spring-security-test")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("io.springfox:springfox-boot-starter:3.0.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
 }
 
 tasks.withType<Test> {

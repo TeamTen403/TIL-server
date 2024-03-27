@@ -16,9 +16,6 @@ public class ResponseDto<T> implements Serializable {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private T data;
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String message;
-
 	public static <T> ResponseDto<T> code(ResponseType responseType) {
 		return ResponseDto.<T>builder().code(responseType.getCode()).build();
 	}
