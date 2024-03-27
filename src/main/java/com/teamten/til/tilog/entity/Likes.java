@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Bookmark {
+public class Likes {
 	@EmbeddedId
 	private TilogTilerCompositeKey id;
 	@CreatedDate

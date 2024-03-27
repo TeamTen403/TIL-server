@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/tilog")
-public class TILogController {
+public class TilogController {
 	private static final String TILOG_IMAGE_DIR = "tilog";
 	private final TILogService tiLogService;
 	private final StorageUploader storageUploader;
