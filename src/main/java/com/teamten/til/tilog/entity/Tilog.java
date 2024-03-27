@@ -1,6 +1,7 @@
 package com.teamten.til.tilog.entity;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,16 +16,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "tilog")
-@Getter
-@NoArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Entity
 public class Tilog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +37,8 @@ public class Tilog {
 	private String title;
 	private String content;
 	private String thumbnail;
-	@JoinColumn(name = "id")
+	private String regYm;
+	@JoinColumn(name = "tag_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Tag tag;
 	@Builder.Default
@@ -46,5 +48,13 @@ public class Tilog {
 
 	@LastModifiedDate
 	private LocalDateTime modYmdt;
+
+	public String getTagName() {
+		if (Objects.isNull(tag)) {
+			return null;
+		}
+
+		return tag.getName();
+	}
 
 }

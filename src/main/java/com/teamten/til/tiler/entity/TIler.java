@@ -8,9 +8,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 @Entity
 @Table(name = "tiler")
+@Getter
 public class TIler {
 	@Id
 	private String email;

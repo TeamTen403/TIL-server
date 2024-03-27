@@ -18,7 +18,9 @@ import com.teamten.til.common.dto.ResponseType;
 import com.teamten.til.common.util.StorageUploader;
 import com.teamten.til.tilog.dto.FileUploadResponse;
 import com.teamten.til.tilog.dto.TilogMonthly;
-import com.teamten.til.tilog.service.TILogService;
+import com.teamten.til.tilog.entity.Tag;
+import com.teamten.til.tilog.repository.TagRepository;
+import com.teamten.til.tilog.service.TilogService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +30,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tilog")
 public class TilogController {
 	private static final String TILOG_IMAGE_DIR = "tilog";
-	private final TILogService tiLogService;
+	private final TilogService tiLogService;
 	private final StorageUploader storageUploader;
+	private final TagRepository tagRepository;
 
 	@GetMapping
 	@Operation(description = "월별 tilog 리스트 조회")
@@ -40,7 +43,9 @@ public class TilogController {
 			ym = LocalDate.now();
 		}
 
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.getMontlyList(ym)));
+		String email = "email";
+
+		return ResponseEntity.ok(ResponseDto.ok(tiLogService.getMontlyList(ym, email)));
 	}
 
 	@PostMapping("/image")
@@ -52,6 +57,13 @@ public class TilogController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDto.code(ResponseType.ERROR));
 		}
+	}
 
+	@PostMapping("/tag")
+	public ResponseEntity<ResponseDto<Tag>> addTag(@RequestParam String name) {
+		Tag tag = new Tag(name);
+
+		tagRepository.save(tag);
+		return ResponseEntity.ok(ResponseDto.ok(tag));
 	}
 }
