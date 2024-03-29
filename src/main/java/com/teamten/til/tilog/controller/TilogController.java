@@ -21,6 +21,7 @@ import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
 import com.teamten.til.common.util.StorageUploader;
 import com.teamten.til.tilog.dto.BookmarkResponse;
+import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.FileUploadResponse;
 import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.dto.TagInfoResponse;
@@ -56,9 +57,18 @@ public class TilogController {
 		}
 
 		// TODO: 로그인정보
-		String email = "email";
+		String tilerId = "tilerId";
 
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(yyyyMM, email)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(yyyyMM, tilerId)));
+	}
+
+	@GetMapping("/feed")
+	@Operation(description = "피드 리스트 조회")
+	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList() {
+		// TODO: 로그인정보
+		String tilerId = "tilerId";
+
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getFeed(tilerId)));
 	}
 
 	@PostMapping("/image")
@@ -82,8 +92,8 @@ public class TilogController {
 	@Operation(description = "tilog 작성")
 	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@RequestBody TilogRequest request) {
 		// TODO: 로그인정보
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.saveTilog(request, email)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.saveTilog(request, tilerId)));
 	}
 
 	@PutMapping("/{tilogId}")
@@ -92,46 +102,46 @@ public class TilogController {
 		@RequestBody TilogRequest request,
 		@PathVariable Long tilogId) {
 		// TODO: 로그인정보
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.editTilog(tilogId, request, email)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.editTilog(tilogId, request, tilerId)));
 	}
 
 	@DeleteMapping("/{tilogId}")
-	@Operation(description = "tilog 편집")
+	@Operation(description = "tilog 삭제")
 	public ResponseEntity<ResponseDto> removeTilog(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
-		String email = "email";
-		tilogService.removeTilog(tilogId, email);
+		String tilerId = "tilerId";
+		tilogService.removeTilog(tilogId, tilerId);
 		return ResponseEntity.ok(ResponseDto.ok());
 	}
 
 	@PostMapping("/{tilogId}/like")
 	@Operation(description = "좋아요 저장")
 	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId) {
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(email, tilogId)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(tilerId, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/like")
 	@Operation(description = "좋아요 취소")
 	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(email, tilogId)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(tilerId, tilogId)));
 	}
 
 	@PostMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 저장")
 	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(email, tilogId)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(tilerId, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 취소")
 	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
-		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(email, tilogId)));
+		String tilerId = "tilerId";
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(tilerId, tilogId)));
 	}
 }

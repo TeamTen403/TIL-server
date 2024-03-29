@@ -25,4 +25,7 @@ public interface TilogRepository extends JpaRepository<Tilog, Long> {
 	List<Tilog> findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(TilerTemp tiler,
 		String start,
 		String end);
+
+	List<Tilog> findAllOrderByRegYmdDescRegYmdtDesc();
+
 }

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
@@ -97,6 +98,24 @@ public class TilogService {
 		}
 
 		tilogRepository.deleteById(tilogId);
+	}
+
+	public FeedResponse getFeed(String tilerId) {
+		TilerTemp tiler = TilerTemp.createById(tilerId);
+
+		List<TilogInfo> tilogList = tilogRepository.findAllOrderByRegYmdDescRegYmdtDesc()
+			.stream().map(tilog -> {
+				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+
+				TilogInfo tilogInfo = TilogInfo.of(tilog, isLiked, isBookmarked);
+
+				return tilogInfo;
+			}).collect(Collectors.toList());
+
+		return FeedResponse.builder()
+			.tilogList(tilogList)
+			.build();
 	}
 
 	private TilerTemp findUser(String tilerId) {
