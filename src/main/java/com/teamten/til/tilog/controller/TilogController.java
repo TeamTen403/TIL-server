@@ -23,13 +23,13 @@ import com.teamten.til.common.util.StorageUploader;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.FileUploadResponse;
 import com.teamten.til.tilog.dto.LikeResponse;
+import com.teamten.til.tilog.dto.TagInfoResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
-import com.teamten.til.tilog.entity.Tag;
-import com.teamten.til.tilog.repository.TagRepository;
 import com.teamten.til.tilog.service.BookmarkService;
 import com.teamten.til.tilog.service.LikesService;
+import com.teamten.til.tilog.service.TagService;
 import com.teamten.til.tilog.service.TilogService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,8 +43,8 @@ public class TilogController {
 	private final TilogService tilogService;
 	private final LikesService likesService;
 	private final BookmarkService bookmarkService;
+	private final TagService tagService;
 	private final StorageUploader storageUploader;
-	private final TagRepository tagRepository;
 
 	@GetMapping
 	@Operation(description = "월별 tilog 리스트 조회")
@@ -72,13 +72,10 @@ public class TilogController {
 		}
 	}
 
-	// TODO: 제거
-	@PostMapping("/tag")
-	public ResponseEntity<ResponseDto<Tag>> addTag(@RequestParam String name) {
-		Tag tag = Tag.builder().name(name).build();
-
-		tagRepository.save(tag);
-		return ResponseEntity.ok(ResponseDto.ok(tag));
+	@GetMapping("/tag")
+	@Operation(description = "태그리스트 조회")
+	public ResponseEntity<ResponseDto<TagInfoResponse>> getTagList() {
+		return ResponseEntity.ok(ResponseDto.ok(tagService.getAll()));
 	}
 
 	@PostMapping
