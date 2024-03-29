@@ -13,6 +13,7 @@ import lombok.Getter;
 public class TilogInfo implements Serializable {
 	private long id;
 	private String title;
+	private String tilerId;
 	private String nickname;
 	private String thumbnailUrl;
 	private String tagName;
@@ -26,7 +27,7 @@ public class TilogInfo implements Serializable {
 		return TilogInfo.builder()
 			.id(tilog.getId())
 			.title(tilog.getTitle())
-			.nickname(tilog.getUser().getNickName())
+			.nickname(tilog.getTiler().getNickName())
 			.thumbnailUrl(tilog.getThumbnail())
 			.tagName(tilog.getTagName())
 			.likeCount(tilog.getLikes())
@@ -41,7 +42,7 @@ public class TilogInfo implements Serializable {
 		return TilogInfo.builder()
 			.id(tilog.getId())
 			.title(tilog.getTitle())
-			.nickname(tilog.getUser().getNickName())
+			.nickname(tilog.getTiler().getNickName())
 			.thumbnailUrl(tilog.getThumbnail())
 			.tagName(tilog.getTagName())
 			.likeCount(tilog.getLikes())

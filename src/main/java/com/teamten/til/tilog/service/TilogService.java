@@ -8,19 +8,14 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.teamten.til.tiler.entity.TIler;
-import com.teamten.til.tilog.dto.BookmarkResponse;
-import com.teamten.til.tilog.dto.LikeResponse;
+import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
-import com.teamten.til.tilog.entity.Bookmark;
-import com.teamten.til.tilog.entity.Likes;
 import com.teamten.til.tilog.entity.Tag;
 import com.teamten.til.tilog.entity.Tilog;
-import com.teamten.til.tilog.entity.key.TilogTilerCompositeKey;
 import com.teamten.til.tilog.repository.BookmarkRepository;
 import com.teamten.til.tilog.repository.LikesRepository;
 import com.teamten.til.tilog.repository.TilogRepository;
@@ -34,15 +29,14 @@ public class TilogService {
 	private final LikesRepository likesRepository;
 	private final BookmarkRepository bookmarkRepository;
 
-	public TilogMonthly getMontlyList(LocalDate ym, String email) {
+	public TilogMonthly getMontlyList(LocalDate ym, String tilerId) {
 		String yyyyMM = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
+		TilerTemp tiler = findUser(tilerId);
 
-		List<TilogInfo> tilogList = tilogRepository.findAllByUserAndRegYmdStartingWith(new TIler(email), yyyyMM)
+		List<TilogInfo> tilogList = tilogRepository.findAllByTilerAndRegYmdStartingWith(tiler, yyyyMM)
 			.stream().map(tilog -> {
-				TilogTilerCompositeKey compositeKey = new TilogTilerCompositeKey(tilog.getId(), email);
-
-				boolean isLiked = likesRepository.findById(compositeKey).isPresent();
-				boolean isBookmarked = bookmarkRepository.findById(compositeKey).isPresent();
+				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
 
 				TilogInfo tilogInfo = TilogInfo.of(tilog, isLiked, isBookmarked);
 
@@ -55,13 +49,13 @@ public class TilogService {
 			.build();
 	}
 
-	public TilogInfo saveTilog(TilogRequest request, String email) {
+	public TilogInfo saveTilog(TilogRequest request, String tilerId) {
 		// TODO: 회원조회
-		TIler user = findUser(email);
+		TilerTemp tiler = findUser(tilerId);
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 		// TODO: 오늘 이미 TILOG 작성했는지 체크
-		tilogRepository.findByUserAndRegYmd(user, yyyyMMdd).ifPresent(tilog -> {
+		tilogRepository.findByTilerAndRegYmd(tiler, yyyyMMdd).ifPresent(tilog -> {
 			throw new RuntimeException("에러발생"); // TODO: 커스텀 예외로 변경
 		});
 
@@ -72,7 +66,7 @@ public class TilogService {
 			.content(request.getContent())
 			.tag(tag)
 			.thumbnail(request.getThumbnail())
-			.user(user)
+			.tiler(tiler)
 			.build();
 
 		tilogRepository.save(tilog);
@@ -80,12 +74,12 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
-	public TilogInfo editTilog(Long tilogId, TilogRequest request, String email) {
+	public TilogInfo editTilog(Long tilogId, TilogRequest request, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
 		// TODO: 회원조회
 
-		if (!StringUtils.equals(tilog.getUser().getEmail(), email)) {
+		if (!StringUtils.equals(tilog.getTiler().getId(), tilerId)) {
 			throw new RuntimeException("이메일이 다름");
 		}
 
@@ -96,94 +90,36 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
-	public void removeTilog(Long tilogId, String email) {
+	public void removeTilog(Long tilogId, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
-		if (!StringUtils.equals(tilog.getUser().getEmail(), email)) {
+		if (!StringUtils.equals(tilog.getTiler().getEmail(), tilerId)) {
 			throw new RuntimeException("이메일이 다름");
 		}
 
 		tilogRepository.deleteById(tilogId);
 	}
 
-	@Transactional
-	public LikeResponse addLikes(String email, Long tilogId) {
-		TIler user = findUser(email);
+	public FeedResponse getFeed(String tilerId) {
+		TilerTemp tiler = TilerTemp.createById(tilerId);
 
-		TilogTilerCompositeKey likeId = new TilogTilerCompositeKey(tilogId, email);
+		List<TilogInfo> tilogList = tilogRepository.findAllByOrderByRegYmdDescRegYmdtDesc()
+			.stream().map(tilog -> {
+				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
 
-		likesRepository.findById(likeId).ifPresent(likes -> {
-			throw new RuntimeException("이미 좋아요를 눌렀습니다");
-		});
+				TilogInfo tilogInfo = TilogInfo.of(tilog, isLiked, isBookmarked);
 
-		Likes like = Likes.builder().id(likeId).build();
-		tilogRepository.incrementLikes(tilogId);
-		likesRepository.save(like);
+				return tilogInfo;
+			}).collect(Collectors.toList());
 
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
-
-		return LikeResponse.builder()
-			.tilogId(tilogId)
-			.likes(tilog.getLikes())
-			.isLiked(true)
+		return FeedResponse.builder()
+			.tilogList(tilogList)
 			.build();
 	}
 
-	@Transactional
-	public LikeResponse removeLikes(String email, Long tilogId) {
-		TIler user = findUser(email);
-
-		TilogTilerCompositeKey likeId = new TilogTilerCompositeKey(tilogId, email);
-
-		likesRepository.findById(likeId).orElseThrow(() -> new RuntimeException("좋아요한 기록이 없습니다."));
-
-		tilogRepository.decrementLikes(tilogId);
-		likesRepository.deleteById(likeId);
-
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
-
-		return LikeResponse.builder()
-			.tilogId(tilogId)
-			.likes(tilog.getLikes())
-			.isLiked(false)
-			.build();
-	}
-
-	public BookmarkResponse addBookmark(String email, Long tilogId) {
-		tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
-
-		TilogTilerCompositeKey bookmarkId = new TilogTilerCompositeKey(tilogId, email);
-
-		bookmarkRepository.findById(bookmarkId).ifPresent(likes -> {
-			throw new RuntimeException("이미 북마크를 저장했습니다.");
-		});
-
-		Bookmark bookmark = Bookmark.builder().id(bookmarkId).build();
-		bookmarkRepository.save(bookmark);
-
-		return BookmarkResponse.builder()
-			.tilogId(tilogId)
-			.isBookmarked(true)
-			.build();
-	}
-
-	public BookmarkResponse removeBookmark(String email, Long tilogId) {
-		tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
-
-		TilogTilerCompositeKey bookmarkId = new TilogTilerCompositeKey(tilogId, email);
-
-		bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new RuntimeException("북마크 내역이 없습니다."));
-
-		bookmarkRepository.deleteById(bookmarkId);
-
-		return BookmarkResponse.builder()
-			.tilogId(tilogId)
-			.isBookmarked(false)
-			.build();
-	}
-
-	private TIler findUser(String email) {
-		return new TIler(email);
+	private TilerTemp findUser(String tilerId) {
+		return TilerTemp.createById(tilerId);
 	}
 
 }

@@ -7,10 +7,11 @@ import java.util.Objects;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.teamten.til.tiler.entity.TIler;
+import com.teamten.til.tiler.entity.TilerTemp;
 import com.teamten.til.tilog.dto.TilogRequest;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,19 +31,24 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 public class Tilog {
+	public static Tilog createById(Long id) {
+		return Tilog.builder().id(id).build();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JoinColumn(name = "email", nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private TIler user;
+	@JoinColumn(name = "tiler_id", nullable = false)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private TilerTemp tiler;
 	private String title;
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	private String thumbnail;
 	private String regYmd;
 	@JoinColumn(name = "tag_id")
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Tag tag;
 	@Builder.Default
 	private long likes = 0;
