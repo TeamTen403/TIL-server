@@ -10,5 +10,4 @@ public class TilApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TilApplication.class, args);
 	}
-
 }
