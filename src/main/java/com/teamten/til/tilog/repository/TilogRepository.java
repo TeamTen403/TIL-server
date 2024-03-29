@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.teamten.til.tiler.entity.TIler;
+import com.teamten.til.tiler.entity.TilerTemp;
 import com.teamten.til.tilog.entity.Tilog;
 
 public interface TilogRepository extends JpaRepository<Tilog, Long> {
-	List<Tilog> findAllByUserAndRegYmdStartingWith(TIler user, String regYm);
+	List<Tilog> findAllByTilerAndRegYmdStartingWith(TilerTemp tiler, String regYm);
 
-	Optional<Tilog> findByUserAndRegYmd(TIler user, String regYmd);
+	Optional<Tilog> findByTilerAndRegYmd(TilerTemp tiler, String regYmd);
 
 	@Modifying(clearAutomatically = true)
 	@Query("UPDATE Tilog t SET t.likes = t.likes + 1 WHERE t.id = :id")

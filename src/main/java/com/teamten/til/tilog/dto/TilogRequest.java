@@ -7,5 +7,5 @@ public class TilogRequest {
 	private String title;
 	private String content;
 	private String thumbnail;
-	private Long tagId;
+	private String tagId;
 }

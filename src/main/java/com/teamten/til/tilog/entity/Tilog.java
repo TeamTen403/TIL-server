@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.teamten.til.tiler.entity.TIler;
+import com.teamten.til.tiler.entity.TilerTemp;
 import com.teamten.til.tilog.dto.TilogRequest;
 
 import jakarta.persistence.CascadeType;
@@ -30,13 +30,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 public class Tilog {
+	public static Tilog createById(Long id) {
+		return Tilog.builder().id(id).build();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@JoinColumn(name = "email", nullable = false)
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private TIler user;
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private TilerTemp tiler;
 	private String title;
 	private String content;
 	private String thumbnail;
