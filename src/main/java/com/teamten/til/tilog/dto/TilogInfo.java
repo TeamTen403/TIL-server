@@ -13,6 +13,7 @@ import lombok.Getter;
 public class TilogInfo implements Serializable {
 	private long id;
 	private String title;
+	private String userId;
 	private String nickname;
 	private String thumbnailUrl;
 	private String tagName;
