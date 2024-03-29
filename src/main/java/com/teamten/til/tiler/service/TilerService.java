@@ -2,6 +2,8 @@ package com.teamten.til.tiler.service;
 
 import java.util.List;
 
+import com.teamten.til.tiler.utils.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,9 @@ public class TilerService {
 
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder encoder;
-
+	@Value("${jwt.token.secret}")
+	private String key;
+	private Long expireTimeMs = 10000*60 * 60L;
 	public List<Tiler> get() {
 		return userRepository.findAll();
 	}
@@ -31,14 +35,15 @@ public class TilerService {
 				.orElseThrow(()->new AppException(ErrorCode.EMAIL_NOTFOUND, email + "이 없습니다."));
 
 		System.out.println(encoder.matches(selectTiler.getPasswd(), passwd));
+
 		//password 틀림
-		if(!encoder.matches(selectTiler.getPasswd(), passwd)){
+		if(!encoder.matches(passwd, selectTiler.getPasswd())){
 			throw new AppException(ErrorCode.INVALiD_PASSWORd,"패스워드를 잘못입력하셨습니다.");
 		}
 
 		//
-
-		return "";
+		String token = JwtTokenUtil.createToken(selectTiler.getEmail(), key, expireTimeMs);
+		return token;
 	}
 
 	public String join(TilerJoinRequest dto) {
