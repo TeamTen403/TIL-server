@@ -26,6 +26,6 @@ public interface TilogRepository extends JpaRepository<Tilog, Long> {
 		String start,
 		String end);
 
-	List<Tilog> findAllOrderByRegYmdDescRegYmdtDesc();
+	List<Tilog> findAllByOrderByRegYmdDescRegYmdtDesc();
 
 }

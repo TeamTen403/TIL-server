@@ -103,7 +103,7 @@ public class TilogService {
 	public FeedResponse getFeed(String tilerId) {
 		TilerTemp tiler = TilerTemp.createById(tilerId);
 
-		List<TilogInfo> tilogList = tilogRepository.findAllOrderByRegYmdDescRegYmdtDesc()
+		List<TilogInfo> tilogList = tilogRepository.findAllByOrderByRegYmdDescRegYmdtDesc()
 			.stream().map(tilog -> {
 				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
 				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
