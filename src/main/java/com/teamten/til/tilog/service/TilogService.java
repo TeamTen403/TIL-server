@@ -28,9 +28,9 @@ public class TilogService {
 	private final LikesRepository likesRepository;
 	private final BookmarkRepository bookmarkRepository;
 
-	public TilogMonthly getMontlyList(LocalDate ym, String email) {
+	public TilogMonthly getMontlyList(LocalDate ym, String tilerId) {
 		String yyyyMM = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
-		TilerTemp tiler = findUser(email);
+		TilerTemp tiler = findUser(tilerId);
 
 		List<TilogInfo> tilogList = tilogRepository.findAllByTilerAndRegYmdStartingWith(tiler, yyyyMM)
 			.stream().map(tilog -> {
@@ -48,9 +48,9 @@ public class TilogService {
 			.build();
 	}
 
-	public TilogInfo saveTilog(TilogRequest request, String email) {
+	public TilogInfo saveTilog(TilogRequest request, String tilerId) {
 		// TODO: 회원조회
-		TilerTemp tiler = findUser(email);
+		TilerTemp tiler = findUser(tilerId);
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 		// TODO: 오늘 이미 TILOG 작성했는지 체크
@@ -73,12 +73,12 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
-	public TilogInfo editTilog(Long tilogId, TilogRequest request, String email) {
+	public TilogInfo editTilog(Long tilogId, TilogRequest request, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
 		// TODO: 회원조회
 
-		if (!StringUtils.equals(tilog.getTiler().getEmail(), email)) {
+		if (!StringUtils.equals(tilog.getTiler().getId(), tilerId)) {
 			throw new RuntimeException("이메일이 다름");
 		}
 
@@ -89,18 +89,18 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
-	public void removeTilog(Long tilogId, String email) {
+	public void removeTilog(Long tilogId, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
-		if (!StringUtils.equals(tilog.getTiler().getEmail(), email)) {
+		if (!StringUtils.equals(tilog.getTiler().getEmail(), tilerId)) {
 			throw new RuntimeException("이메일이 다름");
 		}
 
 		tilogRepository.deleteById(tilogId);
 	}
 
-	private TilerTemp findUser(String email) {
-		return TilerTemp.createById(email);
+	private TilerTemp findUser(String tilerId) {
+		return TilerTemp.createById(tilerId);
 	}
 
 }

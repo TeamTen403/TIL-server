@@ -26,7 +26,4 @@ public class TIler {
 	@Enumerated(EnumType.STRING)
 	private AuthProvider authProvider; // 로그인정보
 
-	public TIler(String email) { //TODO: 지워주셔요
-		this.email = email;
-	}
 }

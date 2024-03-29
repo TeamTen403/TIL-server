@@ -25,12 +25,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class Bookmark {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "tiler_email", unique = true)
+	@JoinColumn(name = "tiler_id", unique = true)
 	private TilerTemp tiler;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

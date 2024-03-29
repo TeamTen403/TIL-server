@@ -49,16 +49,16 @@ public class TilogController {
 	@GetMapping
 	@Operation(description = "월별 tilog 리스트 조회")
 	public ResponseEntity<ResponseDto<TilogMonthly>> getMonthlyList(
-		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate ym) {
+		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate yyyyMM) {
 
-		if (Objects.isNull(ym)) {
-			ym = LocalDate.now();
+		if (Objects.isNull(yyyyMM)) {
+			yyyyMM = LocalDate.now();
 		}
 
 		// TODO: 로그인정보
 		String email = "email";
 
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(ym, email)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(yyyyMM, email)));
 	}
 
 	@PostMapping("/image")

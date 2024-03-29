@@ -1,8 +1,4 @@
-package com.teamten.til.tilog.entity;
-
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
+package com.teamten.til.challenge.entity;
 
 import com.teamten.til.tiler.entity.TilerTemp;
 
@@ -19,22 +15,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Likes {
+@AllArgsConstructor
+public class ChallengeParticipant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@JoinColumn(name = "tiler_id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "tiler_id", unique = true)
 	private TilerTemp tiler;
 
+	@JoinColumn(name = "challenge_id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "tilog_id", unique = true)
-	private Tilog tilog;
-	@CreatedDate
-	private LocalDateTime regYmdt;
+	private Challenge challenge;
+
 }

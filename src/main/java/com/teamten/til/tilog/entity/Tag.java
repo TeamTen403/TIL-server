@@ -3,6 +3,7 @@ package com.teamten.til.tilog.entity;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.teamten.til.challenge.entity.Challenge;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -27,5 +28,9 @@ public class Tag {
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tag", cascade = CascadeType.ALL)
 	private List<Tilog> tilogList;
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tag", cascade = CascadeType.ALL)
+	private List<Challenge> challenges;
 
 }

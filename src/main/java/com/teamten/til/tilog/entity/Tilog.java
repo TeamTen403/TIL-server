@@ -11,6 +11,7 @@ import com.teamten.til.tiler.entity.TilerTemp;
 import com.teamten.til.tilog.dto.TilogRequest;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -38,15 +39,16 @@ public class Tilog {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JoinColumn(name = "email", nullable = false)
+	@JoinColumn(name = "tiler_id", nullable = false)
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private TilerTemp tiler;
 	private String title;
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	private String thumbnail;
 	private String regYmd;
 	@JoinColumn(name = "tag_id")
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Tag tag;
 	@Builder.Default
 	private long likes = 0;

@@ -17,8 +17,8 @@ public class BookmarkService {
 	private final TilogRepository tilogRepository;
 	private final BookmarkRepository bookmarkRepository;
 
-	public BookmarkResponse addBookmark(String email, Long tilogId) {
-		TilerTemp searchTiler = TilerTemp.createById(email);
+	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
+		TilerTemp searchTiler = TilerTemp.createById(tilerId);
 
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
@@ -35,9 +35,9 @@ public class BookmarkService {
 			.build();
 	}
 
-	public BookmarkResponse removeBookmark(String email, Long tilogId) {
+	public BookmarkResponse removeBookmark(String tilerId, Long tilogId) {
 
-		TilerTemp tiler = TilerTemp.createById(email);
+		TilerTemp tiler = TilerTemp.createById(tilerId);
 		Tilog tilog = Tilog.createById(tilogId);
 
 		Bookmark bookmark = bookmarkRepository.findByTilerAndTilog(tiler, tilog)
