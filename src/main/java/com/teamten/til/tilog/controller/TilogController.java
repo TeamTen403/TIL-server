@@ -28,6 +28,8 @@ import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
 import com.teamten.til.tilog.entity.Tag;
 import com.teamten.til.tilog.repository.TagRepository;
+import com.teamten.til.tilog.service.BookmarkService;
+import com.teamten.til.tilog.service.LikesService;
 import com.teamten.til.tilog.service.TilogService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +40,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tilog")
 public class TilogController {
 	private static final String TILOG_IMAGE_DIR = "tilog";
-	private final TilogService tiLogService;
+	private final TilogService tilogService;
+	private final LikesService likesService;
+	private final BookmarkService bookmarkService;
 	private final StorageUploader storageUploader;
 	private final TagRepository tagRepository;
 
@@ -54,7 +58,7 @@ public class TilogController {
 		// TODO: 로그인정보
 		String email = "email";
 
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.getMontlyList(ym, email)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(ym, email)));
 	}
 
 	@PostMapping("/image")
@@ -82,7 +86,7 @@ public class TilogController {
 	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@RequestBody TilogRequest request) {
 		// TODO: 로그인정보
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.saveTilog(request, email)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.saveTilog(request, email)));
 	}
 
 	@PutMapping("/{tilogId}")
@@ -92,7 +96,7 @@ public class TilogController {
 		@PathVariable Long tilogId) {
 		// TODO: 로그인정보
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.editTilog(tilogId, request, email)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.editTilog(tilogId, request, email)));
 	}
 
 	@DeleteMapping("/{tilogId}")
@@ -100,7 +104,7 @@ public class TilogController {
 	public ResponseEntity<ResponseDto> removeTilog(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
 		String email = "email";
-		tiLogService.removeTilog(tilogId, email);
+		tilogService.removeTilog(tilogId, email);
 		return ResponseEntity.ok(ResponseDto.ok());
 	}
 
@@ -108,7 +112,7 @@ public class TilogController {
 	@Operation(description = "좋아요 저장")
 	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId) {
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.addLikes(email, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(email, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/like")
@@ -116,14 +120,14 @@ public class TilogController {
 	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.removeLikes(email, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(email, tilogId)));
 	}
 
 	@PostMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 저장")
 	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.addBookmark(email, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(email, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/bookmark")
@@ -131,6 +135,6 @@ public class TilogController {
 	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
 		String email = "email";
-		return ResponseEntity.ok(ResponseDto.ok(tiLogService.removeBookmark(email, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(email, tilogId)));
 	}
 }
