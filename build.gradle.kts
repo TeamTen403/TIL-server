@@ -30,11 +30,11 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
 
 //    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-//    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-//    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.security:spring-security-test")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.apache.commons:commons-lang3:3.12.0")
