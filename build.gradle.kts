@@ -40,6 +40,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
+    // Object Storage
+    implementation("com.amazonaws:aws-java-sdk-s3:1.11.375")
 }
 
 tasks.withType<Test> {
