@@ -9,10 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tiler")
 @Getter
+@NoArgsConstructor
 public class TIler {
 	@Id
 	private String email;
@@ -23,4 +25,8 @@ public class TIler {
 	@JsonIgnore
 	@Enumerated(EnumType.STRING)
 	private AuthProvider authProvider; // 로그인정보
+
+	public TIler(String email) { //TODO: 지워주셔요
+		this.email = email;
+	}
 }

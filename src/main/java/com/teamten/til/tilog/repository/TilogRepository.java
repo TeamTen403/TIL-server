@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.teamten.til.tiler.entity.TIler;
 import com.teamten.til.tilog.entity.Tilog;
 
 public interface TilogRepository extends JpaRepository<Tilog, Long> {
-	List<Tilog> findAllByEmailAndRegYmdStartingWith(String email, String regYm);
+	List<Tilog> findAllByUserAndRegYmdStartingWith(TIler user, String regYm);
 
-	Optional<Tilog> findByEmailAndRegYmd(String email, String regYmd);
+	Optional<Tilog> findByUserAndRegYmd(TIler user, String regYmd);
 }

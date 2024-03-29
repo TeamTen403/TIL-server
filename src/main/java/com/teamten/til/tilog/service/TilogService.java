@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.teamten.til.tiler.entity.TIler;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
@@ -31,7 +32,7 @@ public class TilogService {
 	public TilogMonthly getMontlyList(LocalDate ym, String email) {
 		String yyyyMM = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
 
-		List<TilogInfo> tilogList = tilogRepository.findAllByEmailAndRegYmdStartingWith(email, yyyyMM)
+		List<TilogInfo> tilogList = tilogRepository.findAllByUserAndRegYmdStartingWith(new TIler(email), yyyyMM)
 			.stream().map(tilog -> {
 				TilogTilerCompositeKey compositeKey = new TilogTilerCompositeKey(tilog.getId(), email);
 
@@ -55,7 +56,7 @@ public class TilogService {
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 		// TODO: 오늘 이미 TILOG 작성했는지 체크
-		tilogRepository.findByEmailAndRegYmd(email, yyyyMMdd).ifPresent(tilog -> {
+		tilogRepository.findByUserAndRegYmd(new TIler(email), yyyyMMdd).ifPresent(tilog -> {
 			throw new RuntimeException("에러발생"); // TODO: 커스텀 예외로 변경
 		});
 
