@@ -1,11 +1,11 @@
 package com.teamten.til.tiler.controller;
 
 import java.util.List;
+import java.util.UUID;
 
-import com.teamten.til.tiler.dto.TilerLoginRequest;
-import com.teamten.til.tiler.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.tiler.dto.TilerJoinRequest;
+import com.teamten.til.tiler.dto.TilerLoginRequest;
 import com.teamten.til.tiler.dto.TilerStatistics;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tiler.service.TilerService;
@@ -32,8 +33,13 @@ public class TilerController {
 		return ResponseEntity.ok(ResponseDto.ok(tilerService.get()));
 	}
 
+	@GetMapping("/{tilerId}")
+	public ResponseEntity<ResponseDto<Tiler>> get(@PathVariable UUID tilerId) {
+		return ResponseEntity.ok(ResponseDto.ok(tilerService.getOne(tilerId)));
+	}
+
 	@PostMapping("/login")
-	public ResponseEntity<String> log(@RequestBody TilerLoginRequest dto){
+	public ResponseEntity<String> log(@RequestBody TilerLoginRequest dto) {
 		String token = tilerService.login(dto.getEmail(), dto.getPasswd());
 		return ResponseEntity.ok().body(token);
 	}

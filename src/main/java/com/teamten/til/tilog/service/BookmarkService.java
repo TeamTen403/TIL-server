@@ -1,12 +1,18 @@
 package com.teamten.til.tilog.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.BookmarkResponse;
+import com.teamten.til.tilog.dto.FeedResponse;
+import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.entity.Bookmark;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.BookmarkRepository;
+import com.teamten.til.tilog.repository.LikesRepository;
 import com.teamten.til.tilog.repository.TilogRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class BookmarkService {
 	private final TilogRepository tilogRepository;
 	private final BookmarkRepository bookmarkRepository;
+	private final LikesRepository likesRepository;
 
 	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
 		Tiler searchTiler = Tiler.createById(tilerId);
@@ -49,5 +56,19 @@ public class BookmarkService {
 			.tilogId(tilogId)
 			.isBookmarked(false)
 			.build();
+	}
+
+	public FeedResponse getAllMyBookmark(String tilerId) {
+		Tiler tiler = Tiler.createById(tilerId);
+
+		List<TilogInfo> tilogInfoList = tiler.getBookmarkList()
+			.stream()
+			.map(Bookmark::getTilog)
+			.map(tilog -> {
+				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+				return TilogInfo.of(tilog, isLiked, true);
+			}).collect(Collectors.toList());
+
+		return FeedResponse.builder().tilogList(tilogInfoList).build();
 	}
 }
