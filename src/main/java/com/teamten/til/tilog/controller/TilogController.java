@@ -20,16 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
 import com.teamten.til.common.util.StorageUploader;
-import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.FileUploadResponse;
-import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.dto.TagInfoResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
 import com.teamten.til.tilog.dto.TilogRequest;
-import com.teamten.til.tilog.service.BookmarkService;
-import com.teamten.til.tilog.service.LikesService;
 import com.teamten.til.tilog.service.TagService;
 import com.teamten.til.tilog.service.TilogService;
 
@@ -42,8 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class TilogController {
 	private static final String TILOG_IMAGE_DIR = "tilog";
 	private final TilogService tilogService;
-	private final LikesService likesService;
-	private final BookmarkService bookmarkService;
+
 	private final TagService tagService;
 	private final StorageUploader storageUploader;
 
@@ -115,33 +110,4 @@ public class TilogController {
 		return ResponseEntity.ok(ResponseDto.ok());
 	}
 
-	@PostMapping("/{tilogId}/like")
-	@Operation(description = "좋아요 저장")
-	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId) {
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(tilerId, tilogId)));
-	}
-
-	@DeleteMapping("/{tilogId}/like")
-	@Operation(description = "좋아요 취소")
-	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(tilerId, tilogId)));
-	}
-
-	@PostMapping("/{tilogId}/bookmark")
-	@Operation(description = "북마크 저장")
-	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(tilerId, tilogId)));
-	}
-
-	@DeleteMapping("/{tilogId}/bookmark")
-	@Operation(description = "북마크 취소")
-	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(tilerId, tilogId)));
-	}
 }

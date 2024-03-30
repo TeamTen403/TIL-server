@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.tilog.dto.TagInfo;
 import com.teamten.til.tilog.dto.TagInfoResponse;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class TagService {
 	private final TagRepository tagRepository;
 
+	@Transactional(readOnly = true)
 	public TagInfoResponse getAll() {
 
 		List<TagInfo> tagInfoList = tagRepository.findAll()
