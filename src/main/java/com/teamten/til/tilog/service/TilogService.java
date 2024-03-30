@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogMonthly;
@@ -31,7 +31,7 @@ public class TilogService {
 
 	public TilogMonthly getMontlyList(LocalDate ym, String tilerId) {
 		String yyyyMM = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
-		TilerTemp tiler = findUser(tilerId);
+		Tiler tiler = findUser(tilerId);
 
 		List<TilogInfo> tilogList = tilogRepository.findAllByTilerAndRegYmdStartingWith(tiler, yyyyMM)
 			.stream().map(tilog -> {
@@ -51,7 +51,7 @@ public class TilogService {
 
 	public TilogInfo saveTilog(TilogRequest request, String tilerId) {
 		// TODO: 회원조회
-		TilerTemp tiler = findUser(tilerId);
+		Tiler tiler = findUser(tilerId);
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 		// TODO: 오늘 이미 TILOG 작성했는지 체크
@@ -79,7 +79,7 @@ public class TilogService {
 
 		// TODO: 회원조회
 
-		if (!StringUtils.equals(tilog.getTiler().getId(), tilerId)) {
+		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
 			throw new RuntimeException("이메일이 다름");
 		}
 
@@ -101,7 +101,7 @@ public class TilogService {
 	}
 
 	public FeedResponse getFeed(String tilerId) {
-		TilerTemp tiler = TilerTemp.createById(tilerId);
+		Tiler tiler = Tiler.createById(tilerId);
 
 		List<TilogInfo> tilogList = tilogRepository.findAllByOrderByRegYmdDescRegYmdtDesc()
 			.stream().map(tilog -> {
@@ -118,8 +118,8 @@ public class TilogService {
 			.build();
 	}
 
-	private TilerTemp findUser(String tilerId) {
-		return TilerTemp.createById(tilerId);
+	private Tiler findUser(String tilerId) {
+		return Tiler.createById(tilerId);
 	}
 
 }

@@ -3,7 +3,7 @@ package com.teamten.til.tilog.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.entity.Likes;
 import com.teamten.til.tilog.entity.Tilog;
@@ -20,7 +20,7 @@ public class LikesService {
 
 	@Transactional
 	public LikeResponse addLikes(String email, Long tilogId) {
-		TilerTemp searchTiler = TilerTemp.createById(email);
+		Tiler searchTiler = Tiler.createById(email);
 		Tilog searchTilog = Tilog.createById(tilogId);
 
 		likesRepository.findByTilerAndTilog(searchTiler, searchTilog).ifPresent(likes -> {
@@ -42,7 +42,7 @@ public class LikesService {
 
 	@Transactional
 	public LikeResponse removeLikes(String email, Long tilogId) {
-		TilerTemp searchTiler = TilerTemp.createById(email);
+		Tiler searchTiler = Tiler.createById(email);
 		Tilog searchTilog = Tilog.createById(tilogId);
 
 		Likes like = likesRepository.findByTilerAndTilog(searchTiler, searchTilog)

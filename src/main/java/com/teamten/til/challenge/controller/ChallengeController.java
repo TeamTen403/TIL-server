@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.teamten.til.challenge.dto.ChallengeInfo;
 import com.teamten.til.challenge.dto.ChallengeInfoResponse;
 import com.teamten.til.challenge.service.ChallengeService;
+import com.teamten.til.common.dto.LoginUser;
 import com.teamten.til.common.dto.ResponseDto;
+import com.teamten.til.tiler.dto.LoginTiler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +26,9 @@ public class ChallengeController {
 
 	@GetMapping
 	@Operation(description = "챌린지리스트 조회 API")
-	public ResponseEntity<ResponseDto<ChallengeInfoResponse>> getChallengeAll() {
+	public ResponseEntity<ResponseDto<ChallengeInfoResponse>> getChallengeAll(@LoginUser LoginTiler tilerInfo) {
 		// 로그인
-		String tilerId = "a";
+		String tilerId = tilerInfo.getId().toString();
 		return ResponseEntity.ok(ResponseDto.ok(challengeService.getChallengeList(tilerId)));
 	}
 

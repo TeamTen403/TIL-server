@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
 
 public interface TilogRepository extends JpaRepository<Tilog, Long> {
-	List<Tilog> findAllByTilerAndRegYmdStartingWith(TilerTemp tiler, String regYm);
+	List<Tilog> findAllByTilerAndRegYmdStartingWith(Tiler tiler, String regYm);
 
-	Optional<Tilog> findByTilerAndRegYmd(TilerTemp tiler, String regYmd);
+	Optional<Tilog> findByTilerAndRegYmd(Tiler tiler, String regYmd);
 
 	@Modifying(clearAutomatically = true)
 	@Query("UPDATE Tilog t SET t.likes = t.likes + 1 WHERE t.id = :id")
@@ -22,7 +22,7 @@ public interface TilogRepository extends JpaRepository<Tilog, Long> {
 	@Query("UPDATE Tilog t SET t.likes = t.likes - 1 WHERE t.id = :id")
 	int decrementLikes(Long id);
 
-	List<Tilog> findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(TilerTemp tiler,
+	List<Tilog> findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(Tiler tiler,
 		String start,
 		String end);
 

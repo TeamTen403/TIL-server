@@ -1,6 +1,6 @@
 package com.teamten.til.challenge.entity;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ public class ChallengeParticipant {
 
 	@JoinColumn(name = "tiler_id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private TilerTemp tiler;
+	private Tiler tiler;
 
 	@JoinColumn(name = "challenge_id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

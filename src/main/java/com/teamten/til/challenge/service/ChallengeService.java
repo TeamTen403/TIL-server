@@ -3,6 +3,7 @@ package com.teamten.til.challenge.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import com.teamten.til.challenge.entity.ChallengeParticipant;
 import com.teamten.til.challenge.entity.ChallengeType;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.challenge.repository.ChallengeRepository;
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.TilogRepository;
 
@@ -29,7 +30,7 @@ public class ChallengeService {
 	private final TilogRepository tilogRepository;
 
 	public ChallengeInfo applyChallenge(Long challengeId, String tilerId) {
-		TilerTemp tiler = TilerTemp.createById(tilerId);
+		Tiler tiler = Tiler.createById(tilerId);
 
 		Challenge challenge = challengeRepository.findById(challengeId)
 			.filter(Challenge::inProgress)
@@ -64,7 +65,7 @@ public class ChallengeService {
 	}
 
 	public ChallengeInfoResponse getChallengeList(String tilerId) {
-		TilerTemp tiler = TilerTemp.createById(tilerId);
+		Tiler tiler = Tiler.createById(tilerId);
 
 		List<ChallengeInfo> challengeInfos = challengeRepository.findAll().stream().map(challenge -> {
 			boolean isParticipant = participantRepository.findByChallengeAndTiler(challenge, tiler).isPresent();

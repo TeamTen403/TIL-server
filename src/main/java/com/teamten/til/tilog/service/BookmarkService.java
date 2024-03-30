@@ -2,7 +2,7 @@ package com.teamten.til.tilog.service;
 
 import org.springframework.stereotype.Service;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.entity.Bookmark;
 import com.teamten.til.tilog.entity.Tilog;
@@ -18,7 +18,7 @@ public class BookmarkService {
 	private final BookmarkRepository bookmarkRepository;
 
 	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
-		TilerTemp searchTiler = TilerTemp.createById(tilerId);
+		Tiler searchTiler = Tiler.createById(tilerId);
 
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
@@ -37,7 +37,7 @@ public class BookmarkService {
 
 	public BookmarkResponse removeBookmark(String tilerId, Long tilogId) {
 
-		TilerTemp tiler = TilerTemp.createById(tilerId);
+		Tiler tiler = Tiler.createById(tilerId);
 		Tilog tilog = Tilog.createById(tilogId);
 
 		Bookmark bookmark = bookmarkRepository.findByTilerAndTilog(tiler, tilog)

@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.TilogRequest;
 
 import jakarta.persistence.CascadeType;
@@ -41,7 +41,7 @@ public class Tilog {
 
 	@JoinColumn(name = "tiler_id", nullable = false)
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private TilerTemp tiler;
+	private Tiler tiler;
 	private String title;
 	@Column(columnDefinition = "TEXT")
 	private String content;

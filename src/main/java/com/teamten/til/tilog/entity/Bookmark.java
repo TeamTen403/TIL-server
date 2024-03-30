@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 
-import com.teamten.til.tiler.entity.TilerTemp;
+import com.teamten.til.tiler.entity.Tiler;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -31,7 +31,7 @@ public class Bookmark {
 	private Long id;
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "tiler_id", unique = true)
-	private TilerTemp tiler;
+	private Tiler tiler;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "tilog_id", unique = true)
