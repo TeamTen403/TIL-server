@@ -35,7 +35,7 @@ public class TilerController {
 	@PostMapping("/login")
 	public ResponseEntity<String> log(@RequestBody TilerLoginRequest dto){
 		String token = tilerService.login(dto.getEmail(), dto.getPasswd());
-		return ResponseEntity.ok().body(tilerService.login("", ""));
+		return ResponseEntity.ok().body(token);
 	}
 
 	@PostMapping("/join")
