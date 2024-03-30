@@ -54,8 +54,8 @@ public class TilerController {
 	@GetMapping("/statistics")
 	@Operation(description = "유저통계 조회 API")
 	public ResponseEntity<ResponseDto<TilerStatistics>> getStatistics() {
-		String loginInfo = "temp";
+		String tilerId = "temp";
 
-		return ResponseEntity.ok(ResponseDto.ok(tilerService.getStatistics(loginInfo)));
+		return ResponseEntity.ok(ResponseDto.ok(tilerService.getStatistics(tilerId)));
 	}
 }

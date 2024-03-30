@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.teamten.til.common.exception.DuplicatedException;
+import com.teamten.til.common.exception.InvalidException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
@@ -59,7 +61,7 @@ public class TilogService {
 
 		// TODO: 오늘 이미 TILOG 작성했는지 체크
 		tilogRepository.findByTilerAndRegYmd(tiler, yyyyMMdd).ifPresent(tilog -> {
-			throw new RuntimeException("에러발생"); // TODO: 커스텀 예외로 변경
+			throw new DuplicatedException();
 		});
 
 		Tag tag = Tag.builder().id(request.getTagId()).build();
@@ -83,7 +85,7 @@ public class TilogService {
 		// TODO: 회원조회
 
 		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
-			throw new RuntimeException("이메일이 다름");
+			throw new InvalidException();
 		}
 
 		tilog.editTilog(request);
@@ -94,10 +96,10 @@ public class TilogService {
 	}
 
 	public void removeTilog(Long tilogId, String tilerId) {
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("존재하지 않는 tilog입니다."));
 
 		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
-			throw new RuntimeException("작성자가 아닙니다.");
+			throw new InvalidException();
 		}
 
 		tilogRepository.deleteById(tilogId);
