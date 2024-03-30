@@ -42,6 +42,10 @@ dependencies {
 
     // Object Storage
     implementation("com.amazonaws:aws-java-sdk-s3:1.11.375")
+//
+    implementation ("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly ("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly ("io.jsonwebtoken:jjwt-jackson:0.11.5")
 }
 
 tasks.withType<Test> {
