@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.BookmarkResponse;
-import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
+import com.teamten.til.tilog.dto.TilogInfoResponse;
 import com.teamten.til.tilog.entity.Bookmark;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.BookmarkRepository;
@@ -58,7 +59,8 @@ public class BookmarkService {
 			.build();
 	}
 
-	public FeedResponse getAllMyBookmark(String tilerId) {
+	@Transactional(readOnly = true)
+	public TilogInfoResponse getAllMyBookmark(String tilerId) {
 		Tiler tiler = Tiler.createById(tilerId);
 
 		List<TilogInfo> tilogInfoList = tiler.getBookmarkList()
@@ -69,6 +71,6 @@ public class BookmarkService {
 				return TilogInfo.of(tilog, isLiked, true);
 			}).collect(Collectors.toList());
 
-		return FeedResponse.builder().tilogList(tilogInfoList).build();
+		return TilogInfoResponse.builder().tilogList(tilogInfoList).build();
 	}
 }

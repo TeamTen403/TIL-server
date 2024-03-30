@@ -7,7 +7,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FeedResponse {
-	private List<TilogInfo> popularList;
+public class TilogInfoResponse {
 	private List<TilogInfo> tilogList;
 }

@@ -38,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class TilogController {
 	private static final String TILOG_IMAGE_DIR = "tilog";
 	private final TilogService tilogService;
-	
+
 	private final TagService tagService;
 	private final StorageUploader storageUploader;
 

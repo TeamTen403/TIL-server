@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.tilog.dto.BookmarkResponse;
-import com.teamten.til.tilog.dto.FeedResponse;
+import com.teamten.til.tilog.dto.TilogInfoResponse;
 import com.teamten.til.tilog.service.BookmarkService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,7 @@ public class BookmarkController {
 
 	@GetMapping("/bookmark")
 	@Operation(description = "북마크한 틸로그 리스트 조회")
-	public ResponseEntity<ResponseDto<FeedResponse>> getBookmarkList() {
+	public ResponseEntity<ResponseDto<TilogInfoResponse>> getBookmarkList() {
 		String tilerId = "tilerId";
 		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.getAllMyBookmark(tilerId)));
 	}
