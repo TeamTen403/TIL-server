@@ -2,6 +2,8 @@ package com.teamten.til.tiler.controller;
 
 import java.util.List;
 
+import com.teamten.til.tiler.dto.TilerLoginRequest;
+import com.teamten.til.tiler.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,12 @@ public class TilerController {
 	@GetMapping
 	public ResponseEntity<ResponseDto<List<Tiler>>> get() {
 		return ResponseEntity.ok(ResponseDto.ok(tilerService.get()));
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<String> log(@RequestBody TilerLoginRequest dto){
+		String token = tilerService.login(dto.getEmail(), dto.getPasswd());
+		return ResponseEntity.ok().body(token);
 	}
 
 	@PostMapping("/join")
