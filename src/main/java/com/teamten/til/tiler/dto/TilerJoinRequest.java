@@ -13,7 +13,7 @@ public class TilerJoinRequest {
 	private String email;
 	private String passwd;
 	private String nickName;
-	private String job;
+	private String jobId;
 	private AuthProvider authProvider;
 
 }

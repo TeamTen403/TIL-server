@@ -1,18 +1,20 @@
 package com.teamten.til.tiler.service;
 
 import java.util.List;
+import java.util.UUID;
 
-import com.teamten.til.tiler.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.teamten.til.tiler.dto.TilerJoinRequest;
 import com.teamten.til.tiler.dto.TilerStatistics;
+import com.teamten.til.tiler.entity.Job;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tiler.exception.AppException;
 import com.teamten.til.tiler.exception.ErrorCode;
 import com.teamten.til.tiler.repository.UserRepository;
+import com.teamten.til.tiler.utils.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,21 +26,26 @@ public class TilerService {
 	private final BCryptPasswordEncoder encoder;
 	@Value("${jwt.token.secret}")
 	private String key;
-	private Long expireTimeMs = 10000*60 * 60L;
+	private Long expireTimeMs = 10000 * 60 * 60L;
+
 	public List<Tiler> get() {
 		return userRepository.findAll();
 	}
 
-	public String login(String email, String passwd){
+	public Tiler getOne(UUID tilerId) {
+		return userRepository.findById(tilerId).orElse(null);
+	}
+
+	public String login(String email, String passwd) {
 		//email없음
 		Tiler selectTiler = userRepository.findByEmail(email)
-				.orElseThrow(()->new AppException(ErrorCode.EMAIL_NOTFOUND, email + "이 없습니다."));
+			.orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOTFOUND, email + "이 없습니다."));
 
 		System.out.println(encoder.matches(selectTiler.getPasswd(), passwd));
 
 		//password 틀림
-		if(!encoder.matches(passwd, selectTiler.getPasswd())){
-			throw new AppException(ErrorCode.INVALiD_PASSWORd,"패스워드를 잘못입력하셨습니다.");
+		if (!encoder.matches(passwd, selectTiler.getPasswd())) {
+			throw new AppException(ErrorCode.INVALiD_PASSWORd, "패스워드를 잘못입력하셨습니다.");
 		}
 
 		//
@@ -47,7 +54,7 @@ public class TilerService {
 	}
 
 	public String join(TilerJoinRequest dto) {
-//		System.out.println(dto);
+		//		System.out.println(dto);
 		//email 중복 채크
 		userRepository.findByEmail(dto.getEmail())
 			.ifPresent(tiler -> {
@@ -58,7 +65,7 @@ public class TilerService {
 			.email(dto.getEmail())
 			.passwd(encoder.encode(dto.getPasswd()))
 			.nickName(dto.getNickName())
-			.job(dto.getJob())
+			.job(Job.builder().id(dto.getJobId()).build())
 			.authProvider(dto.getAuthProvider())
 			.build();
 		userRepository.save(tiler);

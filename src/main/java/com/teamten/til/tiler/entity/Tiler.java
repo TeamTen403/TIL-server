@@ -17,6 +17,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -45,18 +46,22 @@ public class Tiler {
 	private String email;
 	private String nickName;
 	private String passwd; // 암호화해서 저장
-	private String job; // 직무정보
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Job job; // 직무정보
 
 	@JsonIgnore
 	@Enumerated(EnumType.STRING)
 	private AuthProvider authProvider; // 로그인정보
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
 	private List<Tilog> tilogList;
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
 	private List<Bookmark> bookmarkList;
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
 	private List<ChallengeParticipant> challengeParticipants;
 
