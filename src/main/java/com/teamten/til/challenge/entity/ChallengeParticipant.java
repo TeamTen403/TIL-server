@@ -33,4 +33,8 @@ public class ChallengeParticipant {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Challenge challenge;
 
+	private Boolean isSuccess;
+
+	private int score;
+
 }

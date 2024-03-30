@@ -1,12 +1,19 @@
 package com.teamten.til.tiler.service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.teamten.til.challenge.entity.ChallengeParticipant;
+import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
+import com.teamten.til.common.exception.UnauthorizedException;
 import com.teamten.til.tiler.dto.TilerJoinRequest;
 import com.teamten.til.tiler.dto.TilerStatistics;
 import com.teamten.til.tiler.entity.Job;
@@ -15,6 +22,7 @@ import com.teamten.til.tiler.exception.AppException;
 import com.teamten.til.tiler.exception.ErrorCode;
 import com.teamten.til.tiler.repository.UserRepository;
 import com.teamten.til.tiler.utils.JwtTokenUtil;
+import com.teamten.til.tilog.entity.Tilog;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class TilerService {
 
 	private final UserRepository userRepository;
+	private final ChallengeParticipantRepository challengeParticipantRepository;
 	private final BCryptPasswordEncoder encoder;
 	@Value("${jwt.token.secret}")
 	private String key;
@@ -72,8 +81,70 @@ public class TilerService {
 		return "성공";
 	}
 
-	public TilerStatistics getStatistics(String loginInfo) {
-		return null;
+	@Transactional(readOnly = true)
+	public TilerStatistics getStatistics(String tilerId) {
+		UUID id = UUID.fromString(tilerId); // TODO: 수정필요
+
+		Tiler tiler = userRepository.findById(id).orElseThrow(() -> new UnauthorizedException());
+
+		List<Tilog> tilogList = tiler.getTilogList().stream()
+			.sorted(Comparator.comparing(Tilog::getRegYmdt).reversed())
+			.collect(Collectors.toList());
+
+		int consecutiveDays = getConsecutiveDays(tilogList);
+
+		// 연속 몇일했는지
+		int totalTilog = tilogList.size();
+
+		long totalLikes = tilogList.stream()
+			.mapToLong(Tilog::getLikes)
+			.sum();
+
+		int totalChallenge = challengeParticipantRepository.findAllByTilerAAndIsSuccessTrue(tiler)
+			.stream()
+			.mapToInt(ChallengeParticipant::getScore)
+			.sum();
+
+		return TilerStatistics.builder()
+			.consecutiveDays(consecutiveDays)
+			.totalChallenge(totalChallenge)
+			.totalLikes((int)totalLikes)
+			.totalTilog(totalTilog)
+			.build();
+	}
+
+	private int getConsecutiveDays(List<Tilog> tilogList) {
+		int consecutiveDays = 0;
+
+		if (tilogList.size() == 0) {
+			return 0;
+		}
+
+		LocalDate today = LocalDate.now();
+		LocalDate yesterday = today.minusDays(1);
+
+		LocalDate current = tilogList.get(0).getRegYmdt().toLocalDate();
+
+		// 가장최근이 2일 이상 지난 경우
+		if (current.isBefore(yesterday)) {
+			return 0;
+		}
+
+		LocalDate lastRegYmdt = null;
+
+		for (Tilog tilog : tilogList) {
+			LocalDate regYmdt = tilog.getRegYmdt().toLocalDate();
+
+			if (lastRegYmdt == null || regYmdt.isEqual(lastRegYmdt.minusDays(1))) {
+				consecutiveDays++;
+			} else {
+				break;
+			}
+
+			lastRegYmdt = regYmdt;
+		}
+
+		return consecutiveDays;
 	}
 }
 
