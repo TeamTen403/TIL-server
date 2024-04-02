@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.teamten.til.challenge.entity.Challenge;
+import com.teamten.til.common.BaseTimeEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 @Entity
-public class Tag {
+public class Tag extends BaseTimeEntity {
 	@Id
 	private String id;
 	private String name;

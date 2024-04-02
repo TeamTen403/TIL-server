@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.teamten.til.challenge.entity.ChallengeParticipant;
+import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tilog.entity.Bookmark;
 import com.teamten.til.tilog.entity.Tilog;
 
@@ -33,7 +34,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class Tiler {
+public class Tiler extends BaseTimeEntity {
 	public static Tiler createById(String tilerId) {
 		return Tiler.builder().id(UUID.fromString(tilerId)).build();
 	}
