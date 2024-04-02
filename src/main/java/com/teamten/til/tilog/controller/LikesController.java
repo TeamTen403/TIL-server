@@ -30,7 +30,7 @@ public class LikesController {
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
 		@ApiResponse(responseCode = "201", description = "이미 저장된 케이스(중복요청)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "권한없음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
 		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
 		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
@@ -44,7 +44,7 @@ public class LikesController {
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
 		@ApiResponse(responseCode = "201", description = "이미 취소된 케이스(중복요청)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "권한없음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
 		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
 		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
