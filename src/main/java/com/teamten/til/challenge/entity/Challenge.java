@@ -35,21 +35,27 @@ public class Challenge {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String title;
-	private String description;
-	private String mission;
-	private int targetAmount;
+	private String icon; // 챌린지 아이콘
+	private String title; // 챌린지 제목
+	private String description; // 챌린지 설명
+	private String mission; // 미션설명
+	private Long level; // 상시에 포함
+	private int targetAmount; // 미션
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Tag tag;
 	@NonNull
 	@Enumerated(EnumType.STRING)
-	private ChallengeType type; // 누적, 연속
+	private MissionType missionType; // 누적, 연속
+
+	@NonNull
+	@Enumerated(EnumType.STRING)
+	private ChallengeType challengeType; // 상시, 이벤트
 	private int winningScore; // 점수
 	private LocalDate startYmd;
 	private LocalDate endYmd;
 
 	@ColumnDefault("'N'")
-	private Character batchFinishYn;
+	private Character accumulateScoreYn;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "challenge", cascade = CascadeType.ALL)
 	private List<ChallengeParticipant> challengeParticipants;

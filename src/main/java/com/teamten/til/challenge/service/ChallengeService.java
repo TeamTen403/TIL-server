@@ -3,18 +3,22 @@ package com.teamten.til.challenge.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.challenge.dto.ChallengeInfo;
 import com.teamten.til.challenge.dto.ChallengeInfoResponse;
 import com.teamten.til.challenge.entity.Challenge;
 import com.teamten.til.challenge.entity.ChallengeParticipant;
-import com.teamten.til.challenge.entity.ChallengeType;
+import com.teamten.til.challenge.entity.MissionType;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.challenge.repository.ChallengeRepository;
+import com.teamten.til.common.exception.DuplicatedException;
+import com.teamten.til.common.exception.InvalidException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.TilogRepository;
@@ -29,15 +33,16 @@ public class ChallengeService {
 	private final ChallengeParticipantRepository participantRepository;
 	private final TilogRepository tilogRepository;
 
+	@Transactional
 	public ChallengeInfo applyChallenge(Long challengeId, String tilerId) {
 		Tiler tiler = Tiler.createById(tilerId);
 
 		Challenge challenge = challengeRepository.findById(challengeId)
 			.filter(Challenge::inProgress)
-			.orElseThrow(() -> new RuntimeException("없는 챌린지"));
+			.orElseThrow(() -> new NotExistException());
 
 		participantRepository.findByChallengeAndTiler(challenge, tiler).ifPresent(challengeParticipant -> {
-			throw new RuntimeException("이미 참여중인 챌린지");
+			throw new DuplicatedException();
 		});
 
 		ChallengeParticipant challengeParticipant = ChallengeParticipant.builder()
@@ -55,7 +60,7 @@ public class ChallengeService {
 		List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
 			tiler, start, end);
 
-		if (challenge.getType() == ChallengeType.ACCUMULATE) {
+		if (challenge.getMissionType() == MissionType.ACCUMULATE) {
 			myAmount = tilogList.size();
 		} else {
 			myAmount = getMaxConsecutiveDays(tilogList);
@@ -64,11 +69,16 @@ public class ChallengeService {
 		return ChallengeInfo.of(challenge, true, myAmount);
 	}
 
+	@Transactional
 	public ChallengeInfoResponse getChallengeList(String tilerId) {
 		Tiler tiler = Tiler.createById(tilerId);
 
 		List<ChallengeInfo> challengeInfos = challengeRepository.findAll().stream().map(challenge -> {
-			boolean isParticipant = participantRepository.findByChallengeAndTiler(challenge, tiler).isPresent();
+
+			ChallengeParticipant participant = participantRepository.findByChallengeAndTiler(challenge, tiler)
+				.orElse(null);
+
+			boolean isParticipant = !Objects.isNull(participant);
 
 			int myAmount;
 
@@ -78,7 +88,7 @@ public class ChallengeService {
 			List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
 				tiler, start, end);
 
-			if (challenge.getType() == ChallengeType.ACCUMULATE) {
+			if (challenge.getMissionType() == MissionType.ACCUMULATE) {
 				myAmount = tilogList.size();
 			} else {
 				myAmount = getMaxConsecutiveDays(tilogList);
@@ -115,6 +125,48 @@ public class ChallengeService {
 		}
 
 		return maxConsecutiveDays;
+	}
+
+	@Transactional
+	public ChallengeInfo updateChallengeResult(Long challengeId, String tilerId) {
+		Tiler tiler = Tiler.createById(tilerId);
+
+		Challenge challenge = challengeRepository.findById(challengeId)
+			.filter(Challenge::inProgress)
+			.orElseThrow(() -> new NotExistException());
+
+		ChallengeParticipant challengeParticipant = participantRepository.findByChallengeAndTiler(challenge, tiler)
+			.orElseThrow(() -> new NotExistException());
+
+		if (!Objects.isNull(challengeParticipant)) {
+			throw new DuplicatedException();
+		}
+
+		if (!challenge.isEnd()) {
+			throw new InvalidException();
+		}
+
+		int myAmount;
+
+		String start = challenge.getStartYmd().format(FORMATTER);
+		String end = challenge.getEndYmd().format(FORMATTER);
+
+		List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
+			tiler, start, end);
+
+		if (challenge.getMissionType() == MissionType.ACCUMULATE) {
+			myAmount = tilogList.size();
+		} else {
+			myAmount = getMaxConsecutiveDays(tilogList);
+		}
+
+		// 초과달성에 대한 점수는 따로 협의 필요
+		boolean isSuccess = myAmount >= challenge.getTargetAmount();
+		challengeParticipant.updateResult(isSuccess);
+
+		participantRepository.save(challengeParticipant);
+
+		return ChallengeInfo.of(challenge, true, myAmount);
 	}
 
 }

@@ -1,13 +1,13 @@
 package com.teamten.til.tilog.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.common.exception.DuplicatedException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
@@ -27,11 +27,12 @@ public class BookmarkService {
 	private final BookmarkRepository bookmarkRepository;
 	private final LikesRepository likesRepository;
 
+	@Transactional
 	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
 		Tiler searchTiler = Tiler.createById(tilerId);
 
 		Tilog tilog = tilogRepository.findById(tilogId)
-			.orElseThrow(() -> new NoSuchElementException("존재하지 않는 tilog입니다."));
+			.orElseThrow(() -> new NotExistException());
 
 		bookmarkRepository.findByTilerAndTilog(searchTiler, tilog).ifPresent(likes -> {
 			throw new DuplicatedException();
@@ -46,6 +47,7 @@ public class BookmarkService {
 			.build();
 	}
 
+	@Transactional
 	public BookmarkResponse removeBookmark(String tilerId, Long tilogId) {
 
 		Tiler tiler = Tiler.createById(tilerId);

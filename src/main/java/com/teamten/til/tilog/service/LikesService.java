@@ -1,12 +1,10 @@
 package com.teamten.til.tilog.service;
 
-import java.util.NoSuchElementException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.common.exception.DuplicatedException;
-import com.teamten.til.common.exception.InvalidException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.entity.Likes;
@@ -35,7 +33,7 @@ public class LikesService {
 		tilogRepository.incrementLikes(tilogId);
 		likesRepository.save(like);
 
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NoSuchElementException("없는 id"));
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)
@@ -55,7 +53,7 @@ public class LikesService {
 		tilogRepository.decrementLikes(tilogId);
 		likesRepository.deleteById(like.getId());
 
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new InvalidException("없는 id"));
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)

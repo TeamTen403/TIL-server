@@ -1,5 +1,6 @@
 package com.teamten.til.common.exception;
 
+import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ExceptionResponse> handleException(Exception e) {
+	@ExceptionHandler(TypeMismatchException.class)
+	public ResponseEntity<ExceptionResponse> handleTypeMismatchException(Exception e) {
 		log.error(toLogMessage(e));
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -28,6 +29,13 @@ public class GlobalExceptionHandler {
 		ResponseType responseType = e.getCode();
 
 		return ResponseEntity.status(responseType.getHttpStatus()).body(ExceptionResponse.from(e));
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ExceptionResponse> handleException(Exception e) {
+		log.error(toLogMessage(e));
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	}
 
 	private String toLogMessage(Exception e) {

@@ -37,4 +37,8 @@ public class ChallengeParticipant {
 
 	private int score;
 
+	public void updateResult(boolean isSuccess) {
+		this.isSuccess = isSuccess;
+	}
+
 }
