@@ -19,8 +19,10 @@ import com.teamten.til.tiler.dto.LoginTiler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Challenge", description = "챌린지 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/challenge")
