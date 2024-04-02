@@ -14,6 +14,10 @@ import com.teamten.til.tilog.dto.TilogInfoResponse;
 import com.teamten.til.tilog.service.BookmarkService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -24,6 +28,11 @@ public class BookmarkController {
 
 	@PostMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 저장")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "found the foo", content = {
+			@Content(mediaType = "application/json", schema = @Schema(implementation = BookmarkResponse.class))}),
+		@ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+		@ApiResponse(responseCode = "404", description = "Foo not found", content = @Content)})
 	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
 		String tilerId = "tilerId";
 		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(tilerId, tilogId)));

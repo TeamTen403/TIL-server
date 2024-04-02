@@ -27,6 +27,7 @@ public class BookmarkService {
 	private final BookmarkRepository bookmarkRepository;
 	private final LikesRepository likesRepository;
 
+	@Transactional
 	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
 		Tiler searchTiler = Tiler.createById(tilerId);
 
@@ -46,6 +47,7 @@ public class BookmarkService {
 			.build();
 	}
 
+	@Transactional
 	public BookmarkResponse removeBookmark(String tilerId, Long tilogId) {
 
 		Tiler tiler = Tiler.createById(tilerId);

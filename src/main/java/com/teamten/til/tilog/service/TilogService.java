@@ -54,6 +54,7 @@ public class TilogService {
 			.build();
 	}
 
+	@Transactional
 	public TilogInfo saveTilog(TilogRequest request, String tilerId) {
 		// TODO: 회원조회
 		Tiler tiler = findUser(tilerId);
@@ -79,6 +80,7 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
+	@Transactional
 	public TilogInfo editTilog(Long tilogId, TilogRequest request, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
 
@@ -95,6 +97,7 @@ public class TilogService {
 		return TilogInfo.from(tilog);
 	}
 
+	@Transactional
 	public void removeTilog(Long tilogId, String tilerId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("존재하지 않는 tilog입니다."));
 
