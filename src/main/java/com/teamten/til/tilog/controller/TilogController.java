@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.teamten.til.common.dto.ExceptionResponse;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
 import com.teamten.til.common.util.StorageUploader;
@@ -51,8 +52,8 @@ public class TilogController {
 	@Operation(description = "월별 Tilog 리스트 조회")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<TilogMonthly>> getMonthlyList(
 		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate yyyyMM) {
@@ -71,8 +72,8 @@ public class TilogController {
 	@Operation(description = "피드 리스트 조회")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList() {
 		// TODO: 비로그인 상태에서도 받아올 수 있어야함
@@ -85,7 +86,7 @@ public class TilogController {
 	@Operation(description = "이미지 업로드")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<FileUploadResponse>> uploadImage(@RequestParam MultipartFile image) {
 		try {
@@ -100,9 +101,9 @@ public class TilogController {
 	@Operation(description = "태그리스트 조회")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<TagInfoResponse>> getTagList() {
 		return ResponseEntity.ok(ResponseDto.ok(tagService.getAll()));
@@ -113,9 +114,9 @@ public class TilogController {
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
 		@ApiResponse(responseCode = "201", description = "오늘 이미 Tilog를 작성했음"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@Valid @RequestBody TilogRequest request) {
 		// TODO: 로그인정보
@@ -127,10 +128,10 @@ public class TilogController {
 	@Operation(description = "tilog 편집")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<TilogInfo>> editTilog(
 		@RequestBody TilogRequest request,
@@ -144,10 +145,10 @@ public class TilogController {
 	@Operation(description = "tilog 삭제")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "401", description = "비로그인", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
 	public ResponseEntity<ResponseDto<Void>> removeTilog(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
