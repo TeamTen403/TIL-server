@@ -17,6 +17,7 @@ import com.teamten.til.challenge.entity.MissionType;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.challenge.repository.ChallengeRepository;
 import com.teamten.til.common.exception.DuplicatedException;
+import com.teamten.til.common.exception.InvalidException;
 import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
@@ -93,15 +94,6 @@ public class ChallengeService {
 				myAmount = getMaxConsecutiveDays(tilogList);
 			}
 
-			// 초과달성에 대한 점수는 따로 협의 필요
-			// 아직 결과 업데이트가 안된 경우
-			if (challenge.isEnd() && Objects.isNull(participant.getIsSuccess())) {
-				boolean isSuccess = myAmount >= challenge.getTargetAmount();
-				participant.updateResult(isSuccess);
-
-				participantRepository.save(participant);
-			}
-
 			return ChallengeInfo.of(challenge, isParticipant, myAmount);
 		}).collect(Collectors.toList());
 
@@ -133,6 +125,48 @@ public class ChallengeService {
 		}
 
 		return maxConsecutiveDays;
+	}
+
+	@Transactional
+	public ChallengeInfo updateChallengeResult(Long challengeId, String tilerId) {
+		Tiler tiler = Tiler.createById(tilerId);
+
+		Challenge challenge = challengeRepository.findById(challengeId)
+			.filter(Challenge::inProgress)
+			.orElseThrow(() -> new NotExistException());
+
+		ChallengeParticipant challengeParticipant = participantRepository.findByChallengeAndTiler(challenge, tiler)
+			.orElseThrow(() -> new NotExistException());
+
+		if (!Objects.isNull(challengeParticipant)) {
+			throw new DuplicatedException();
+		}
+
+		if (!challenge.isEnd()) {
+			throw new InvalidException();
+		}
+
+		int myAmount;
+
+		String start = challenge.getStartYmd().format(FORMATTER);
+		String end = challenge.getEndYmd().format(FORMATTER);
+
+		List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
+			tiler, start, end);
+
+		if (challenge.getMissionType() == MissionType.ACCUMULATE) {
+			myAmount = tilogList.size();
+		} else {
+			myAmount = getMaxConsecutiveDays(tilogList);
+		}
+
+		// 초과달성에 대한 점수는 따로 협의 필요
+		boolean isSuccess = myAmount >= challenge.getTargetAmount();
+		challengeParticipant.updateResult(isSuccess);
+
+		participantRepository.save(challengeParticipant);
+
+		return ChallengeInfo.of(challenge, true, myAmount);
 	}
 
 }
