@@ -66,7 +66,7 @@ public class ChallengeService {
 			myAmount = getMaxConsecutiveDays(tilogList);
 		}
 
-		return ChallengeInfo.of(challenge, true, myAmount);
+		return ChallengeInfo.of(challenge, true, myAmount, challengeParticipant.getIsSuccess());
 	}
 
 	@Transactional
@@ -78,7 +78,13 @@ public class ChallengeService {
 			ChallengeParticipant participant = participantRepository.findByChallengeAndTiler(challenge, tiler)
 				.orElse(null);
 
-			boolean isParticipant = !Objects.isNull(participant);
+			boolean isParticipant = false;
+			Boolean isSuccess = null;
+
+			if (!Objects.isNull(participant)) {
+				isParticipant = true;
+				isSuccess = participant.getIsSuccess();
+			}
 
 			int myAmount;
 
@@ -94,7 +100,7 @@ public class ChallengeService {
 				myAmount = getMaxConsecutiveDays(tilogList);
 			}
 
-			return ChallengeInfo.of(challenge, isParticipant, myAmount);
+			return ChallengeInfo.of(challenge, isParticipant, myAmount, isSuccess);
 		}).collect(Collectors.toList());
 
 		return ChallengeInfoResponse
@@ -166,7 +172,7 @@ public class ChallengeService {
 
 		participantRepository.save(challengeParticipant);
 
-		return ChallengeInfo.of(challenge, true, myAmount);
+		return ChallengeInfo.of(challenge, true, myAmount, isSuccess);
 	}
 
 }

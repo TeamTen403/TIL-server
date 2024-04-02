@@ -5,8 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tilog.entity.Tag;
 
@@ -54,9 +52,6 @@ public class Challenge extends BaseTimeEntity {
 	private int winningScore; // 점수
 	private LocalDate startYmd;
 	private LocalDate endYmd;
-
-	@ColumnDefault("'N'")
-	private Character accumulateScoreYn;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "challenge", cascade = CascadeType.ALL)
 	private List<ChallengeParticipant> challengeParticipants;
