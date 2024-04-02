@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.teamten.til.common.config.swagger.ApiErrorResponse;
 import com.teamten.til.common.dto.ExceptionResponse;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
@@ -50,11 +51,8 @@ public class TilogController {
 
 	@GetMapping
 	@Operation(description = "월별 Tilog 리스트 조회")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 파라미터", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 500})
 	public ResponseEntity<ResponseDto<TilogMonthly>> getMonthlyList(
 		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate yyyyMM) {
 
@@ -70,10 +68,8 @@ public class TilogController {
 
 	@GetMapping("/feed")
 	@Operation(description = "피드 리스트 조회")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class)
 	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList() {
 		// TODO: 권한없음 상태에서도 받아올 수 있어야함
 		String tilerId = "tilerId";
@@ -83,10 +79,8 @@ public class TilogController {
 
 	@PostMapping("/image")
 	@Operation(description = "이미지 업로드")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class)
 	public ResponseEntity<ResponseDto<FileUploadResponse>> uploadImage(@RequestParam MultipartFile image) {
 		try {
 			FileUploadResponse fileUploadResponse = storageUploader.upload(image, TILOG_IMAGE_DIR);
@@ -98,10 +92,8 @@ public class TilogController {
 
 	@GetMapping("/tag")
 	@Operation(description = "태그리스트 조회")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class)
 	public ResponseEntity<ResponseDto<TagInfoResponse>> getTagList() {
 		return ResponseEntity.ok(ResponseDto.ok(tagService.getAll()));
 	}
@@ -115,6 +107,8 @@ public class TilogController {
 		@ApiResponse(responseCode = "401", description = "권한없음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
 		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
 	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class)
 	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@Valid @RequestBody TilogRequest request) {
 		// TODO: 로그인정보
 		String tilerId = "tilerId";
@@ -123,13 +117,8 @@ public class TilogController {
 
 	@PutMapping("/{tilogId}")
 	@Operation(description = "tilog 편집")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "401", description = "권한없음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 401, 404, 500})
 	public ResponseEntity<ResponseDto<TilogInfo>> editTilog(
 		@RequestBody TilogRequest request,
 		@PathVariable Long tilogId) {
@@ -140,13 +129,8 @@ public class TilogController {
 
 	@DeleteMapping("/{tilogId}")
 	@Operation(description = "tilog 삭제")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공"),
-		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "401", description = "권한없음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "404", description = "Tilog가 존재하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))),
-		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
-	})
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 401, 404, 500})
 	public ResponseEntity<ResponseDto<Boolean>> removeTilog(@PathVariable Long tilogId) {
 		// TODO: 로그인정보
 		String tilerId = "tilerId";

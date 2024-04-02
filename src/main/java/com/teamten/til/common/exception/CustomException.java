@@ -18,6 +18,11 @@ public class CustomException extends RuntimeException {
 		this.code = code;
 	}
 
+	public CustomException(ResponseType code) {
+		super(code.getMessage());
+		this.code = code;
+	}
+
 	public CustomException(String message) {
 		super(message);
 		code = ResponseType.ERROR;
