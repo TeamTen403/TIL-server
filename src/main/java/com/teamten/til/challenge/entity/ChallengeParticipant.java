@@ -1,5 +1,6 @@
 package com.teamten.til.challenge.entity;
 
+import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tiler.entity.Tiler;
 
 import jakarta.persistence.CascadeType;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChallengeParticipant {
+public class ChallengeParticipant extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

@@ -4,9 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
+import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.TilogRequest;
 
@@ -30,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Tilog {
+public class Tilog extends BaseTimeEntity {
 	public static Tilog createById(Long id) {
 		return Tilog.builder().id(id).build();
 	}
@@ -52,11 +50,6 @@ public class Tilog {
 	private Tag tag;
 	@Builder.Default
 	private long likes = 0;
-	@CreatedDate
-	private LocalDateTime regYmdt;
-
-	@LastModifiedDate
-	private LocalDateTime modYmdt;
 
 	public String getTagName() {
 		if (Objects.isNull(tag)) {

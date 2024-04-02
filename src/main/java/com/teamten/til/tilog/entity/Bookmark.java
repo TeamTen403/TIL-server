@@ -1,9 +1,6 @@
 package com.teamten.til.tilog.entity;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-
+import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tiler.entity.Tiler;
 
 import jakarta.persistence.CascadeType;
@@ -24,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Bookmark {
+public class Bookmark extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +33,4 @@ public class Bookmark {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "tilog_id", unique = true)
 	private Tilog tilog;
-	@CreatedDate
-	private LocalDateTime regYmdt;
 }

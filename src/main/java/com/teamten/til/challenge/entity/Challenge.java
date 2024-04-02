@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tilog.entity.Tag;
 
 import jakarta.persistence.CascadeType;
@@ -30,7 +31,7 @@ import lombok.NonNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Challenge {
+public class Challenge extends BaseTimeEntity {
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
