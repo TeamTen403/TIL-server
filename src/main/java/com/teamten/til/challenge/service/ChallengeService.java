@@ -14,6 +14,8 @@ import com.teamten.til.challenge.entity.ChallengeParticipant;
 import com.teamten.til.challenge.entity.MissionType;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.challenge.repository.ChallengeRepository;
+import com.teamten.til.common.exception.DuplicatedException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.TilogRepository;
@@ -33,10 +35,10 @@ public class ChallengeService {
 
 		Challenge challenge = challengeRepository.findById(challengeId)
 			.filter(Challenge::inProgress)
-			.orElseThrow(() -> new RuntimeException("없는 챌린지"));
+			.orElseThrow(() -> new NotExistException());
 
 		participantRepository.findByChallengeAndTiler(challenge, tiler).ifPresent(challengeParticipant -> {
-			throw new RuntimeException("이미 참여중인 챌린지");
+			throw new DuplicatedException();
 		});
 
 		ChallengeParticipant challengeParticipant = ChallengeParticipant.builder()

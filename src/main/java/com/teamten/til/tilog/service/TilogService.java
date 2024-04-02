@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.InvalidException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
@@ -82,7 +83,7 @@ public class TilogService {
 
 	@Transactional
 	public TilogInfo editTilog(Long tilogId, TilogRequest request, String tilerId) {
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("없는 id"));
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		// TODO: 회원조회
 
@@ -99,7 +100,7 @@ public class TilogService {
 
 	@Transactional
 	public void removeTilog(Long tilogId, String tilerId) {
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new RuntimeException("존재하지 않는 tilog입니다."));
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
 			throw new InvalidException();
@@ -127,7 +128,7 @@ public class TilogService {
 		List<TilogInfo> popularList = allTilerInfo.stream()
 			.filter(tilogInfo -> {
 				LocalDateTime regYmdt = tilogInfo.getRegYmdt(); // regYmdt를 가져온다
-				return regYmdt != null && regYmdt.isAfter(LocalDateTime.now().minusDays(2)); // 최신 2일 이내의 글 필터링
+				return regYmdt.isAfter(LocalDateTime.now().minusDays(2)); // 최신 2일 이내의 글 필터링
 			})
 			.sorted(Comparator.comparingLong(TilogInfo::getLikeCount).reversed()) // likes value 내림차순으로 정렬
 			.limit(5) // 상위 5개만 선택

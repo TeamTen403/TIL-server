@@ -28,11 +28,13 @@ public class BookmarkController {
 
 	@PostMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 저장")
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "found the foo", content = {
-			@Content(mediaType = "application/json", schema = @Schema(implementation = BookmarkResponse.class))}),
-		@ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-		@ApiResponse(responseCode = "404", description = "Foo not found", content = @Content)})
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "성공"),
+		@ApiResponse(responseCode = "201", description = "이미 카테고리가 생성된 케이스", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
+		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
+		@ApiResponse(responseCode = "404", description = "잘못된 블로그 아이디가 전달된 케이스", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class))),
+		@ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseDto.class)))
+	})
 	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
 		String tilerId = "tilerId";
 		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(tilerId, tilogId)));
