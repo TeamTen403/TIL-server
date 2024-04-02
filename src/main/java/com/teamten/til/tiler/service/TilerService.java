@@ -100,7 +100,7 @@ public class TilerService {
 			.mapToLong(Tilog::getLikes)
 			.sum();
 
-		int totalChallenge = challengeParticipantRepository.findAllByTilerAAndIsSuccessTrue(tiler)
+		int totalChallenge = challengeParticipantRepository.findAllByTilerAndIsSuccessTrue(tiler)
 			.stream()
 			.mapToInt(ChallengeParticipant::getScore)
 			.sum();

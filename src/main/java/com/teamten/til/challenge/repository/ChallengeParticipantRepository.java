@@ -12,6 +12,6 @@ import com.teamten.til.tiler.entity.Tiler;
 public interface ChallengeParticipantRepository extends JpaRepository<ChallengeParticipant, Long> {
 	Optional<ChallengeParticipant> findByChallengeAndTiler(Challenge challenge, Tiler tiler);
 
-	List<ChallengeParticipant> findAllByTilerAAndIsSuccessTrue(Tiler tiler);
+	List<ChallengeParticipant> findAllByTilerAndIsSuccessTrue(Tiler tiler);
 }
 

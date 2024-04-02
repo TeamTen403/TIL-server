@@ -3,7 +3,6 @@ package com.teamten.til.challenge.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +11,7 @@ import com.teamten.til.challenge.dto.ChallengeInfo;
 import com.teamten.til.challenge.dto.ChallengeInfoResponse;
 import com.teamten.til.challenge.entity.Challenge;
 import com.teamten.til.challenge.entity.ChallengeParticipant;
-import com.teamten.til.challenge.entity.ChallengeType;
+import com.teamten.til.challenge.entity.MissionType;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.challenge.repository.ChallengeRepository;
 import com.teamten.til.tiler.entity.Tiler;
@@ -55,7 +54,7 @@ public class ChallengeService {
 		List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
 			tiler, start, end);
 
-		if (challenge.getType() == ChallengeType.ACCUMULATE) {
+		if (challenge.getMissionType() == MissionType.ACCUMULATE) {
 			myAmount = tilogList.size();
 		} else {
 			myAmount = getMaxConsecutiveDays(tilogList);
@@ -78,7 +77,7 @@ public class ChallengeService {
 			List<Tilog> tilogList = tilogRepository.findAllByTilerAndRegYmdGreaterThanEqualAndRegYmdLessThanEqualOrderByRegYmdAsc(
 				tiler, start, end);
 
-			if (challenge.getType() == ChallengeType.ACCUMULATE) {
+			if (challenge.getMissionType() == MissionType.ACCUMULATE) {
 				myAmount = tilogList.size();
 			} else {
 				myAmount = getMaxConsecutiveDays(tilogList);
