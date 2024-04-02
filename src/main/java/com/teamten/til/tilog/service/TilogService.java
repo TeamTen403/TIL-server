@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -111,17 +112,26 @@ public class TilogService {
 
 	@Transactional(readOnly = true)
 	public FeedResponse getFeed(String tilerId) {
-		Tiler tiler = Tiler.createById(tilerId);
+
+		Tiler tiler;
+
+		if (!Objects.isNull(tilerId)) {
+			tiler = Tiler.createById(tilerId);
+		} else {
+			tiler = null;
+		}
 
 		// TODO: 페이지네이션 도입되면 수정필요
 		List<TilogInfo> allTilerInfo = tilogRepository.findAllByOrderByRegYmdDescRegYmdtDesc()
 			.stream().map(tilog -> {
-				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
-				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+				if (!Objects.isNull(tiler)) {
+					boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
+					boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
 
-				TilogInfo tilogInfo = TilogInfo.of(tilog, isLiked, isBookmarked);
-
-				return tilogInfo;
+					return TilogInfo.of(tilog, isLiked, isBookmarked);
+				}
+				
+				return TilogInfo.from(tilog);
 			}).collect(Collectors.toList());
 
 		// TODO: 인기글은 캐싱 필요
