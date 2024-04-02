@@ -3,9 +3,11 @@ package com.teamten.til.challenge.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.challenge.dto.ChallengeInfo;
 import com.teamten.til.challenge.dto.ChallengeInfoResponse;
@@ -30,6 +32,7 @@ public class ChallengeService {
 	private final ChallengeParticipantRepository participantRepository;
 	private final TilogRepository tilogRepository;
 
+	@Transactional
 	public ChallengeInfo applyChallenge(Long challengeId, String tilerId) {
 		Tiler tiler = Tiler.createById(tilerId);
 
@@ -65,11 +68,16 @@ public class ChallengeService {
 		return ChallengeInfo.of(challenge, true, myAmount);
 	}
 
+	@Transactional
 	public ChallengeInfoResponse getChallengeList(String tilerId) {
 		Tiler tiler = Tiler.createById(tilerId);
 
 		List<ChallengeInfo> challengeInfos = challengeRepository.findAll().stream().map(challenge -> {
-			boolean isParticipant = participantRepository.findByChallengeAndTiler(challenge, tiler).isPresent();
+
+			ChallengeParticipant participant = participantRepository.findByChallengeAndTiler(challenge, tiler)
+				.orElse(null);
+
+			boolean isParticipant = !Objects.isNull(participant);
 
 			int myAmount;
 
@@ -83,6 +91,15 @@ public class ChallengeService {
 				myAmount = tilogList.size();
 			} else {
 				myAmount = getMaxConsecutiveDays(tilogList);
+			}
+
+			// 초과달성에 대한 점수는 따로 협의 필요
+			// 아직 결과 업데이트가 안된 경우
+			if (challenge.isEnd() && Objects.isNull(participant.getIsSuccess())) {
+				boolean isSuccess = myAmount >= challenge.getTargetAmount();
+				participant.updateResult(isSuccess);
+
+				participantRepository.save(participant);
 			}
 
 			return ChallengeInfo.of(challenge, isParticipant, myAmount);
