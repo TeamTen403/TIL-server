@@ -3,24 +3,21 @@ package com.teamten.til.tiler.entity;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import lombok.Getter;
 
 @Getter
-public class LoginUser implements OAuth2User, UserDetails {
+public class LoginUser implements UserDetails {
 
 	private UUID id;
 	private String email;
 	private Tiler user;
 	private Collection<? extends GrantedAuthority> authorities;
-	private Map<String, Object> attributes;
 
 	public LoginUser(UUID id, String email, Tiler user, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
@@ -67,16 +64,6 @@ public class LoginUser implements OAuth2User, UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
-	}
-
-	@Override
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
-
-	@Override
-	public String getName() {
-		return String.valueOf(user.getNickname());
 	}
 
 	@Override
