@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.teamten.til.challenge.entity.ChallengeParticipant;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
 import com.teamten.til.common.config.auth.token.TokenProvider;
+import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.InvalidException;
 import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.common.exception.UnauthorizedException;
@@ -24,8 +25,6 @@ import com.teamten.til.tiler.dto.TilerStatistics;
 import com.teamten.til.tiler.entity.Job;
 import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
-import com.teamten.til.tiler.exception.AppException;
-import com.teamten.til.tiler.exception.ErrorCode;
 import com.teamten.til.tiler.repository.TilerRepository;
 import com.teamten.til.tilog.entity.Tilog;
 
@@ -72,7 +71,7 @@ public class TilerService {
 		//email 중복 채크
 		tilerRepository.findByEmail(request.getEmail())
 			.ifPresent(tiler -> {
-				throw new AppException(ErrorCode.EMAIL_DUPLICATED, request.getEmail() + "는 이미 있습니다.");
+				throw new DuplicatedException();
 			});
 
 		//회원가입 성공
