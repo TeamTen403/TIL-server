@@ -27,7 +27,6 @@ import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tiler.exception.AppException;
 import com.teamten.til.tiler.exception.ErrorCode;
 import com.teamten.til.tiler.repository.TilerRepository;
-import com.teamten.til.tiler.utils.CookieUtils;
 import com.teamten.til.tilog.entity.Tilog;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -63,7 +62,7 @@ public class TilerService {
 
 		String token = tokenProvider.createToken(selectTiler);
 
-		CookieUtils.addCookie(response, TOKEN_KEY, token);
+		// CookieUtils.addCookie(response, TOKEN_KEY, token);
 
 		return TilerLoginResponse.builder().token(token).build();
 	}
