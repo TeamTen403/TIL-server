@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.InvalidException;
 import com.teamten.til.common.exception.NotExistException;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
@@ -36,9 +37,9 @@ public class TilogService {
 	private final BookmarkRepository bookmarkRepository;
 
 	@Transactional(readOnly = true)
-	public TilogMonthly getMontlyList(LocalDate ym, String tilerId) {
+	public TilogMonthly getMontlyList(LoginUser loginUser, LocalDate ym) {
 		String yyyyMM = ym.format(DateTimeFormatter.ofPattern("yyyyMM"));
-		Tiler tiler = findUser(tilerId);
+		Tiler tiler = loginUser.getUser();
 
 		List<TilogInfo> tilogList = tilogRepository.findAllByTilerAndRegYmdStartingWith(tiler, yyyyMM)
 			.stream().map(tilog -> {
@@ -57,12 +58,10 @@ public class TilogService {
 	}
 
 	@Transactional
-	public TilogInfo saveTilog(TilogRequest request, String tilerId) {
-		// TODO: 회원조회
-		Tiler tiler = findUser(tilerId);
+	public TilogInfo saveTilog(LoginUser loginUser, TilogRequest request) {
+		Tiler tiler = loginUser.getUser();
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-		// TODO: 오늘 이미 TILOG 작성했는지 체크
 		tilogRepository.findByTilerAndRegYmd(tiler, yyyyMMdd).ifPresent(tilog -> {
 			throw new DuplicatedException();
 		});
@@ -83,12 +82,11 @@ public class TilogService {
 	}
 
 	@Transactional
-	public TilogInfo editTilog(Long tilogId, TilogRequest request, String tilerId) {
+	public TilogInfo editTilog(LoginUser loginUser, Long tilogId, TilogRequest request) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
+		Tiler tiler = loginUser.getUser();
 
-		// TODO: 회원조회
-
-		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
+		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tiler.getId().toString())) {
 			throw new InvalidException();
 		}
 
@@ -100,10 +98,11 @@ public class TilogService {
 	}
 
 	@Transactional
-	public void removeTilog(Long tilogId, String tilerId) {
+	public void removeTilog(LoginUser loginUser, Long tilogId) {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
+		Tiler tiler = loginUser.getUser();
 
-		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tilerId)) {
+		if (!StringUtils.equals(tilog.getTiler().getId().toString(), tiler.getId().toString())) {
 			throw new InvalidException();
 		}
 
@@ -111,12 +110,12 @@ public class TilogService {
 	}
 
 	@Transactional(readOnly = true)
-	public FeedResponse getFeed(String tilerId) {
+	public FeedResponse getFeed(LoginUser loginUser) {
 
 		Tiler tiler;
 
-		if (!Objects.isNull(tilerId)) {
-			tiler = Tiler.createById(tilerId);
+		if (!Objects.isNull(loginUser)) {
+			tiler = loginUser.getUser();
 		} else {
 			tiler = null;
 		}
@@ -130,7 +129,7 @@ public class TilogService {
 
 					return TilogInfo.of(tilog, isLiked, isBookmarked);
 				}
-				
+
 				return TilogInfo.from(tilog);
 			}).collect(Collectors.toList());
 
@@ -152,10 +151,6 @@ public class TilogService {
 			.popularList(popularList)
 			.tilogList(tilogInfoList)
 			.build();
-	}
-
-	private Tiler findUser(String tilerId) {
-		return Tiler.createById(tilerId);
 	}
 
 }

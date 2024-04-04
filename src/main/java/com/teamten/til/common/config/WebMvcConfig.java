@@ -1,6 +1,9 @@
 package com.teamten.til.common.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -23,5 +26,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 			// 쿠키 허용
 			.allowCredentials(true)
 			.maxAge(MAX_AGE_SECS);
+	}
+
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(new CustomAuthenticationPrincipalArgumentResolver());
 	}
 }

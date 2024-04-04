@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.teamten.til.common.config.swagger.ApiErrorResponse;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
 import com.teamten.til.common.util.StorageUploader;
+import com.teamten.til.tiler.entity.AuthUser;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tilog.dto.FeedResponse;
 import com.teamten.til.tilog.dto.FileUploadResponse;
 import com.teamten.til.tilog.dto.TagInfoResponse;
@@ -52,27 +55,23 @@ public class TilogController {
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 500})
 	public ResponseEntity<ResponseDto<TilogMonthly>> getMonthlyList(
-		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate yyyyMM) {
+		@RequestParam(required = false) @DateTimeFormat(pattern = "yyyyMM") LocalDate yyyyMM,
+		@AuthUser LoginUser loginUser) {
 
 		if (Objects.isNull(yyyyMM)) {
 			yyyyMM = LocalDate.now();
 		}
 
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(yyyyMM, tilerId)));
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getMontlyList(loginUser, yyyyMM)));
 	}
 
 	@GetMapping("/feed")
 	@Operation(description = "피드 리스트 조회")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 500})
-	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList() {
-		// TODO: 권한없음 상태에서도 받아올 수 있어야함
-		String tilerId = "tilerId";
-
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.getFeed(tilerId)));
+	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList(@AuthenticationPrincipal LoginUser loginUser) {
+		
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getFeed(loginUser)));
 	}
 
 	@PostMapping("/image")
@@ -100,10 +99,10 @@ public class TilogController {
 	@Operation(description = "tilog 작성")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 400, 401, 500})
-	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@Valid @RequestBody TilogRequest request) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.saveTilog(request, tilerId)));
+	public ResponseEntity<ResponseDto<TilogInfo>> postTilog(@Valid @RequestBody TilogRequest request,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.saveTilog(loginUser, request)));
 	}
 
 	@PutMapping("/{tilogId}")
@@ -112,20 +111,20 @@ public class TilogController {
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 401, 404, 500})
 	public ResponseEntity<ResponseDto<TilogInfo>> editTilog(
 		@RequestBody TilogRequest request,
-		@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(tilogService.editTilog(tilogId, request, tilerId)));
+		@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.editTilog(loginUser, tilogId, request)));
 	}
 
 	@DeleteMapping("/{tilogId}")
 	@Operation(description = "tilog 삭제")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 401, 404, 500})
-	public ResponseEntity<ResponseDto<Boolean>> removeTilog(@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		tilogService.removeTilog(tilogId, tilerId);
+	public ResponseEntity<ResponseDto<Boolean>> removeTilog(@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		tilogService.removeTilog(loginUser, tilogId);
 		return ResponseEntity.ok(ResponseDto.ok(true));
 	}
 

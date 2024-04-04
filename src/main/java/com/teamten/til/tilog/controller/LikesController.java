@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.teamten.til.common.config.swagger.ApiErrorResponse;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
+import com.teamten.til.tiler.entity.AuthUser;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.service.LikesService;
 
@@ -29,18 +31,19 @@ public class LikesController {
 	@Operation(description = "좋아요 저장")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId) {
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(tilerId, tilogId)));
+	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(loginUser, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/like")
 	@Operation(description = "좋아요 취소")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(tilerId, tilogId)));
+	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(loginUser, tilogId)));
 	}
 }

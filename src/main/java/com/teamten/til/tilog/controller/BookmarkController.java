@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.teamten.til.common.config.swagger.ApiErrorResponse;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
+import com.teamten.til.tiler.entity.AuthUser;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.TilogInfoResponse;
 import com.teamten.til.tilog.service.BookmarkService;
@@ -31,27 +33,28 @@ public class BookmarkController {
 	@Operation(description = "북마크 저장")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId) {
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(tilerId, tilogId)));
+	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(loginUser, tilogId)));
 	}
 
 	@DeleteMapping("/{tilogId}/bookmark")
 	@Operation(description = "북마크 취소")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 500})
-	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId) {
-		// TODO: 로그인정보
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(tilerId, tilogId)));
+	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(loginUser, tilogId)));
 	}
 
 	@GetMapping("/bookmark")
 	@Operation(description = "북마크한 틸로그 리스트 조회")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {401, 500})
-	public ResponseEntity<ResponseDto<TilogInfoResponse>> getBookmarkList() {
-		String tilerId = "tilerId";
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.getAllMyBookmark(tilerId)));
+	public ResponseEntity<ResponseDto<TilogInfoResponse>> getBookmarkList(@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.getAllMyBookmark(loginUser)));
 	}
 }

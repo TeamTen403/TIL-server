@@ -19,6 +19,7 @@ import com.teamten.til.challenge.repository.ChallengeRepository;
 import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.InvalidException;
 import com.teamten.til.common.exception.NotExistException;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.TilogRepository;
@@ -34,16 +35,16 @@ public class ChallengeService {
 	private final TilogRepository tilogRepository;
 
 	@Transactional
-	public ChallengeInfo applyChallenge(Long challengeId, String tilerId) {
-		Tiler tiler = Tiler.createById(tilerId);
-
+	public ChallengeInfo applyChallenge(Long challengeId, LoginUser loginUser) {
+		Tiler tiler = loginUser.getUser();
 		Challenge challenge = challengeRepository.findById(challengeId)
 			.filter(Challenge::inProgress)
 			.orElseThrow(() -> new NotExistException());
 
-		participantRepository.findByChallengeAndTiler(challenge, tiler).ifPresent(challengeParticipant -> {
-			throw new DuplicatedException();
-		});
+		participantRepository.findByChallengeAndTiler(challenge, tiler)
+			.ifPresent(challengeParticipant -> {
+				throw new DuplicatedException();
+			});
 
 		ChallengeParticipant challengeParticipant = ChallengeParticipant.builder()
 			.challenge(challenge)
@@ -70,8 +71,8 @@ public class ChallengeService {
 	}
 
 	@Transactional
-	public ChallengeInfoResponse getChallengeList(String tilerId) {
-		Tiler tiler = Tiler.createById(tilerId);
+	public ChallengeInfoResponse getChallengeList(LoginUser loginUser) {
+		Tiler tiler = loginUser.getUser();
 
 		List<ChallengeInfo> challengeInfos = challengeRepository.findAll().stream().map(challenge -> {
 
@@ -134,8 +135,8 @@ public class ChallengeService {
 	}
 
 	@Transactional
-	public ChallengeInfo updateChallengeResult(Long challengeId, String tilerId) {
-		Tiler tiler = Tiler.createById(tilerId);
+	public ChallengeInfo updateChallengeResult(Long challengeId, LoginUser loginUser) {
+		Tiler tiler = loginUser.getUser();
 
 		Challenge challenge = challengeRepository.findById(challengeId)
 			.filter(Challenge::inProgress)
