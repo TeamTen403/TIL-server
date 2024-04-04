@@ -35,17 +35,14 @@ import lombok.ToString;
 @Getter
 @ToString
 public class Tiler extends BaseTimeEntity {
-	public static Tiler createById(String tilerId) {
-		return Tiler.builder().id(UUID.fromString(tilerId)).build();
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(columnDefinition = "BINARY(16)")
 	private UUID id;
 	@Column(unique = true)
 	private String email;
-	private String nickName;
+	private String nickname;
+	private String profileImage;
 	private String passwd; // 암호화해서 저장
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Job job; // 직무정보

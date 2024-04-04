@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.NotExistException;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
@@ -28,17 +29,17 @@ public class BookmarkService {
 	private final LikesRepository likesRepository;
 
 	@Transactional
-	public BookmarkResponse addBookmark(String tilerId, Long tilogId) {
-		Tiler searchTiler = Tiler.createById(tilerId);
+	public BookmarkResponse addBookmark(LoginUser loginUser, Long tilogId) {
+		Tiler tiler = loginUser.getUser();
 
 		Tilog tilog = tilogRepository.findById(tilogId)
 			.orElseThrow(() -> new NotExistException());
 
-		bookmarkRepository.findByTilerAndTilog(searchTiler, tilog).ifPresent(likes -> {
+		bookmarkRepository.findByTilerAndTilog(tiler, tilog).ifPresent(likes -> {
 			throw new DuplicatedException();
 		});
 
-		Bookmark bookmark = Bookmark.builder().tiler(searchTiler).tilog(tilog).build();
+		Bookmark bookmark = Bookmark.builder().tiler(tiler).tilog(tilog).build();
 		bookmarkRepository.save(bookmark);
 
 		return BookmarkResponse.builder()
@@ -48,10 +49,11 @@ public class BookmarkService {
 	}
 
 	@Transactional
-	public BookmarkResponse removeBookmark(String tilerId, Long tilogId) {
+	public BookmarkResponse removeBookmark(LoginUser loginUser, Long tilogId) {
+		Tiler tiler = loginUser.getUser();
 
-		Tiler tiler = Tiler.createById(tilerId);
-		Tilog tilog = Tilog.createById(tilogId);
+		Tilog tilog = tilogRepository.findById(tilogId)
+			.orElseThrow(() -> new NotExistException());
 
 		Bookmark bookmark = bookmarkRepository.findByTilerAndTilog(tiler, tilog)
 			.orElseThrow(() -> new DuplicatedException());
@@ -65,8 +67,8 @@ public class BookmarkService {
 	}
 
 	@Transactional(readOnly = true)
-	public TilogInfoResponse getAllMyBookmark(String tilerId) {
-		Tiler tiler = Tiler.createById(tilerId);
+	public TilogInfoResponse getAllMyBookmark(LoginUser loginUser) {
+		Tiler tiler = loginUser.getUser();
 
 		List<TilogInfo> tilogInfoList = tiler.getBookmarkList()
 			.stream()

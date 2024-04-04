@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.teamten.til.tiler.entity.Tiler;
 
-public interface UserRepository extends JpaRepository<Tiler, UUID> {
-	//Optional<Tiler> findByNickName(String nickName);
+public interface TilerRepository extends JpaRepository<Tiler, UUID> {
 
 	Optional<Tiler> findByEmail(String email);
 }

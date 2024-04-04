@@ -12,8 +12,9 @@ import lombok.ToString;
 public class TilerJoinRequest {
 	private String email;
 	private String passwd;
-	private String nickName;
+	private String nickname;
+	private String profileImage;
 	private String jobId;
-	private AuthProvider authProvider;
+	private AuthProvider authProvider = AuthProvider.TIL_EMAIL;
 
 }

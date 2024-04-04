@@ -12,10 +12,10 @@ import com.teamten.til.challenge.dto.ChallengeInfo;
 import com.teamten.til.challenge.dto.ChallengeInfoResponse;
 import com.teamten.til.challenge.service.ChallengeService;
 import com.teamten.til.common.config.swagger.ApiErrorResponse;
-import com.teamten.til.common.dto.LoginUser;
 import com.teamten.til.common.dto.ResponseDto;
 import com.teamten.til.common.dto.ResponseType;
-import com.teamten.til.tiler.dto.LoginTiler;
+import com.teamten.til.tiler.entity.AuthUser;
+import com.teamten.til.tiler.entity.LoginUser;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,31 +34,28 @@ public class ChallengeController {
 	@Operation(description = "챌린지리스트 조회 API")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {401, 500})
-	public ResponseEntity<ResponseDto<ChallengeInfoResponse>> getChallengeAll(@LoginUser LoginTiler tilerInfo) {
-		// 로그인
-		String tilerId = tilerInfo.getId().toString();
-		return ResponseEntity.ok(ResponseDto.ok(challengeService.getChallengeList(tilerId)));
+	public ResponseEntity<ResponseDto<ChallengeInfoResponse>> getChallengeAll(@AuthUser LoginUser loginUser) {
+		return ResponseEntity.ok(ResponseDto.ok(challengeService.getChallengeList(loginUser)));
 	}
 
 	@PostMapping("/{challengeId}")
 	@Operation(description = "챌린지 참가 API")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<ChallengeInfo>> participateChallenge(@PathVariable Long challengeId) {
-		// 로그인
-		String tilerId = "a";
-		return ResponseEntity.ok(ResponseDto.ok(challengeService.applyChallenge(challengeId, tilerId)));
+	public ResponseEntity<ResponseDto<ChallengeInfo>> participateChallenge(@PathVariable Long challengeId,
+		@AuthUser LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(challengeService.applyChallenge(challengeId, loginUser)));
 	}
 
 	@PutMapping("/{challengeId}")
 	@Operation(description = "챌린지결과 업데이트")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<ChallengeInfo>> updateChallengeResult(@PathVariable Long challengeId) {
-		// 로그인
-		String tilerId = "a";
+	public ResponseEntity<ResponseDto<ChallengeInfo>> updateChallengeResult(@PathVariable Long challengeId,
+		@AuthUser LoginUser loginUser) {
 
-		return ResponseEntity.ok(ResponseDto.ok(challengeService.updateChallengeResult(challengeId, tilerId)));
+		return ResponseEntity.ok(ResponseDto.ok(challengeService.updateChallengeResult(challengeId, loginUser)));
 	}
 
 }

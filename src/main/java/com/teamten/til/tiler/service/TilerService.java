@@ -6,86 +6,92 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.challenge.entity.ChallengeParticipant;
 import com.teamten.til.challenge.repository.ChallengeParticipantRepository;
+import com.teamten.til.common.config.auth.token.TokenProvider;
+import com.teamten.til.common.exception.InvalidException;
+import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.common.exception.UnauthorizedException;
+import com.teamten.til.tiler.dto.TilerInfo;
 import com.teamten.til.tiler.dto.TilerJoinRequest;
+import com.teamten.til.tiler.dto.TilerLoginRequest;
+import com.teamten.til.tiler.dto.TilerLoginResponse;
 import com.teamten.til.tiler.dto.TilerStatistics;
 import com.teamten.til.tiler.entity.Job;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tiler.exception.AppException;
 import com.teamten.til.tiler.exception.ErrorCode;
-import com.teamten.til.tiler.repository.UserRepository;
-import com.teamten.til.tiler.utils.JwtTokenUtil;
+import com.teamten.til.tiler.repository.TilerRepository;
+import com.teamten.til.tiler.utils.CookieUtils;
 import com.teamten.til.tilog.entity.Tilog;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class TilerService {
+	private static final String TOKEN_KEY = "til_auth";
 
-	private final UserRepository userRepository;
+	private final TilerRepository tilerRepository;
 	private final ChallengeParticipantRepository challengeParticipantRepository;
 	private final BCryptPasswordEncoder encoder;
-	@Value("${jwt.token.secret}")
-	private String key;
-	private Long expireTimeMs = 10000 * 60 * 60L;
+	private final TokenProvider tokenProvider;
 
-	public List<Tiler> get() {
-		return userRepository.findAll();
-	}
-
-	public Tiler getOne(UUID tilerId) {
-		return userRepository.findById(tilerId).orElse(null);
-	}
-
-	public String login(String email, String passwd) {
-		//email없음
-		Tiler selectTiler = userRepository.findByEmail(email)
-			.orElseThrow(() -> new AppException(ErrorCode.EMAIL_NOTFOUND, email + "이 없습니다."));
-
-		System.out.println(encoder.matches(selectTiler.getPasswd(), passwd));
-
-		//password 틀림
-		if (!encoder.matches(passwd, selectTiler.getPasswd())) {
-			throw new AppException(ErrorCode.INVALiD_PASSWORd, "패스워드를 잘못입력하셨습니다.");
-		}
-
-		//
-		String token = JwtTokenUtil.createToken(selectTiler.getEmail(), key, expireTimeMs);
-		return token;
-	}
-
-	public String join(TilerJoinRequest dto) {
-		//		System.out.println(dto);
-		//email 중복 채크
-		userRepository.findByEmail(dto.getEmail())
-			.ifPresent(tiler -> {
-				throw new AppException(ErrorCode.EMAIL_DUPLICATED, dto.getEmail() + "는 이미 있습니다.");
-			});
-		//회원가입 성공
-		Tiler tiler = Tiler.builder()
-			.email(dto.getEmail())
-			.passwd(encoder.encode(dto.getPasswd()))
-			.nickName(dto.getNickName())
-			.job(Job.builder().id(dto.getJobId()).build())
-			.authProvider(dto.getAuthProvider())
-			.build();
-		userRepository.save(tiler);
-		return "성공";
+	@Transactional(readOnly = true)
+	public TilerInfo getOne(UUID tilerId) {
+		return tilerRepository.findById(tilerId)
+			.map(TilerInfo::from)
+			.orElseThrow(() -> new NotExistException());
 	}
 
 	@Transactional(readOnly = true)
-	public TilerStatistics getStatistics(String tilerId) {
-		UUID id = UUID.fromString(tilerId); // TODO: 수정필요
+	public TilerLoginResponse login(HttpServletResponse response, TilerLoginRequest request) {
+		//email없음
+		Tiler selectTiler = tilerRepository.findByEmail(request.getEmail())
+			.orElseThrow(() -> new NotExistException());
 
-		Tiler tiler = userRepository.findById(id).orElseThrow(() -> new UnauthorizedException());
+		//password 틀림
+		if (!encoder.matches(request.getPasswd(), selectTiler.getPasswd())) {
+			throw new InvalidException();
+		}
+
+		String token = tokenProvider.createToken(selectTiler);
+
+		CookieUtils.addCookie(response, TOKEN_KEY, token);
+
+		return TilerLoginResponse.builder().token(token).build();
+	}
+
+	@Transactional
+	public void join(TilerJoinRequest request) {
+		//email 중복 채크
+		tilerRepository.findByEmail(request.getEmail())
+			.ifPresent(tiler -> {
+				throw new AppException(ErrorCode.EMAIL_DUPLICATED, request.getEmail() + "는 이미 있습니다.");
+			});
+
+		//회원가입 성공
+		Tiler tiler = Tiler.builder()
+			.email(request.getEmail())
+			.passwd(encoder.encode(request.getPasswd()))
+			.nickname(request.getNickname())
+			.job(Job.builder().id(request.getJobId()).build())
+			.profileImage(request.getProfileImage())
+			.authProvider(request.getAuthProvider())
+			.build();
+
+		tilerRepository.save(tiler);
+	}
+
+	@Transactional(readOnly = true)
+	public TilerStatistics getStatistics(LoginUser loginUser) {
+		Tiler tiler = tilerRepository.findById(loginUser.getId()).orElseThrow(() -> new UnauthorizedException());
 
 		List<Tilog> tilogList = tiler.getTilogList().stream()
 			.sorted(Comparator.comparing(Tilog::getRegYmdt).reversed())

@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.NotExistException;
+import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.LikeResponse;
 import com.teamten.til.tilog.entity.Likes;
@@ -21,19 +22,17 @@ public class LikesService {
 	private final LikesRepository likesRepository;
 
 	@Transactional
-	public LikeResponse addLikes(String email, Long tilogId) {
-		Tiler searchTiler = Tiler.createById(email);
-		Tilog searchTilog = Tilog.createById(tilogId);
+	public LikeResponse addLikes(LoginUser loginUser, Long tilogId) {
+		Tiler tiler = loginUser.getUser();
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
-		likesRepository.findByTilerAndTilog(searchTiler, searchTilog).ifPresent(likes -> {
+		likesRepository.findByTilerAndTilog(tiler, tilog).ifPresent(likes -> {
 			throw new DuplicatedException("이미 좋아요를 눌렀습니다");
 		});
 
-		Likes like = Likes.builder().tilog(searchTilog).tiler(searchTiler).build();
+		Likes like = Likes.builder().tilog(tilog).tiler(tiler).build();
 		tilogRepository.incrementLikes(tilogId);
 		likesRepository.save(like);
-
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)
@@ -43,17 +42,15 @@ public class LikesService {
 	}
 
 	@Transactional
-	public LikeResponse removeLikes(String email, Long tilogId) {
-		Tiler searchTiler = Tiler.createById(email);
-		Tilog searchTilog = Tilog.createById(tilogId);
+	public LikeResponse removeLikes(LoginUser loginUser, Long tilogId) {
+		Tiler tiler = loginUser.getUser();
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
-		Likes like = likesRepository.findByTilerAndTilog(searchTiler, searchTilog)
+		Likes like = likesRepository.findByTilerAndTilog(tiler, tilog)
 			.orElseThrow(() -> new DuplicatedException("좋아요한 기록이 없습니다."));
 
 		tilogRepository.decrementLikes(tilogId);
 		likesRepository.deleteById(like.getId());
-
-		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)
