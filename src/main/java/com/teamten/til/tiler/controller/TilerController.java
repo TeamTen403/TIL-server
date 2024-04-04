@@ -54,9 +54,9 @@ public class TilerController {
 	@Operation(description = "회원가입")
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 400, 404, 500})
-	public ResponseEntity<String> join(@RequestBody TilerJoinRequest request) {
+	public ResponseEntity<ResponseDto<Boolean>> join(@RequestBody TilerJoinRequest request) {
 		tilerService.join(request);
-		return ResponseEntity.ok().body("회원가입 성공");
+		return ResponseEntity.ok(ResponseDto.ok(true));
 	}
 
 	@GetMapping("/statistics")
