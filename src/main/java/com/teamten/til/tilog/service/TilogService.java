@@ -62,9 +62,9 @@ public class TilogService {
 
 	@Transactional
 	public TilogInfo saveTilog(LoginUser loginUser, TilogRequest request) {
-		Tiler tiler = Tiler.builder().id(loginUser.getUser().getId()).build();
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
+		Tiler tiler = loginUser.getUser();
 		tilogRepository.findByTilerAndRegYmd(tiler, yyyyMMdd).ifPresent(tilog -> {
 			throw new DuplicatedException();
 		});

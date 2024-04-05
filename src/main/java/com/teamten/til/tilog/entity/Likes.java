@@ -3,7 +3,6 @@ package com.teamten.til.tilog.entity;
 import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tiler.entity.Tiler;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +28,7 @@ public class Likes extends BaseTimeEntity {
 	@JoinColumn(name = "tiler_id", unique = true)
 	private Tiler tiler;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tilog_id", unique = true)
 	private Tilog tilog;
 }
