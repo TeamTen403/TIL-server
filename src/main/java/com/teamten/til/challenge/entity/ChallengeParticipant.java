@@ -27,11 +27,11 @@ public class ChallengeParticipant extends BaseTimeEntity {
 	private Long id;
 
 	@JoinColumn(name = "tiler_id")
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Tiler tiler;
 
 	@JoinColumn(name = "challenge_id")
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Challenge challenge;
 
 	private Boolean isSuccess;

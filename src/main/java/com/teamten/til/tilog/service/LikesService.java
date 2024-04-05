@@ -36,7 +36,7 @@ public class LikesService {
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)
-			.likes(tilog.getLikes())
+			.likes(tilog.getLikes() + 1)
 			.isLiked(true)
 			.build();
 	}
@@ -54,7 +54,7 @@ public class LikesService {
 
 		return LikeResponse.builder()
 			.tilogId(tilogId)
-			.likes(tilog.getLikes())
+			.likes(tilog.getLikes() - 1)
 			.isLiked(false)
 			.build();
 	}

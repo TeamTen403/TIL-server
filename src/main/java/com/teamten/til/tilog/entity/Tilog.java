@@ -8,7 +8,6 @@ import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tiler.entity.Tiler;
 import com.teamten.til.tilog.dto.TilogRequest;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,7 +37,7 @@ public class Tilog extends BaseTimeEntity {
 	private Long id;
 
 	@JoinColumn(name = "tiler_id", nullable = false)
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Tiler tiler;
 	private String title;
 	@Column(columnDefinition = "TEXT")
@@ -46,7 +45,7 @@ public class Tilog extends BaseTimeEntity {
 	private String thumbnail;
 	private String regYmd;
 	@JoinColumn(name = "tag_id")
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Tag tag;
 	@Builder.Default
 	private long likes = 0;

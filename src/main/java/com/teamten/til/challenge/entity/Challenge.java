@@ -40,7 +40,7 @@ public class Challenge extends BaseTimeEntity {
 	private String mission; // 미션설명
 	private Long level; // 상시에 포함
 	private int targetAmount; // 미션
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Tag tag;
 	@NonNull
 	@Enumerated(EnumType.STRING)

@@ -25,6 +25,7 @@ import com.teamten.til.tilog.entity.Tag;
 import com.teamten.til.tilog.entity.Tilog;
 import com.teamten.til.tilog.repository.BookmarkRepository;
 import com.teamten.til.tilog.repository.LikesRepository;
+import com.teamten.til.tilog.repository.TagRepository;
 import com.teamten.til.tilog.repository.TilogRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,14 @@ public class TilogService {
 	private final TilogRepository tilogRepository;
 	private final LikesRepository likesRepository;
 	private final BookmarkRepository bookmarkRepository;
+	private final TagRepository tagRepository;
+
+	@Transactional(readOnly = true)
+	public TilogInfo getById(LoginUser loginUser, Long tilogId) {
+		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
+
+		return getTilogInfo(loginUser, tilog);
+	}
 
 	@Transactional(readOnly = true)
 	public TilogMonthly getMontlyList(LoginUser loginUser, LocalDate ym) {
@@ -42,14 +51,8 @@ public class TilogService {
 		Tiler tiler = loginUser.getUser();
 
 		List<TilogInfo> tilogList = tilogRepository.findAllByTilerAndRegYmdStartingWith(tiler, yyyyMM)
-			.stream().map(tilog -> {
-				boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
-				boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
-
-				TilogInfo tilogInfo = TilogInfo.of(tilog, isLiked, isBookmarked);
-
-				return tilogInfo;
-			}).collect(Collectors.toList());
+			.stream().map(tilog -> getTilogInfo(loginUser, tilog))
+			.collect(Collectors.toList());
 
 		return TilogMonthly.builder()
 			.ym(yyyyMM)
@@ -59,14 +62,14 @@ public class TilogService {
 
 	@Transactional
 	public TilogInfo saveTilog(LoginUser loginUser, TilogRequest request) {
-		Tiler tiler = loginUser.getUser();
+		Tiler tiler = Tiler.builder().id(loginUser.getUser().getId()).build();
 		String yyyyMMdd = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
 		tilogRepository.findByTilerAndRegYmd(tiler, yyyyMMdd).ifPresent(tilog -> {
 			throw new DuplicatedException();
 		});
 
-		Tag tag = Tag.builder().id(request.getTagId()).build();
+		Tag tag = tagRepository.findById(request.getTagId()).orElseThrow(() -> new NotExistException());
 
 		Tilog tilog = Tilog.builder()
 			.title(request.getTitle())
@@ -112,26 +115,10 @@ public class TilogService {
 	@Transactional(readOnly = true)
 	public FeedResponse getFeed(LoginUser loginUser) {
 
-		Tiler tiler;
-
-		if (!Objects.isNull(loginUser)) {
-			tiler = loginUser.getUser();
-		} else {
-			tiler = null;
-		}
-
 		// TODO: 페이지네이션 도입되면 수정필요
 		List<TilogInfo> allTilerInfo = tilogRepository.findAllByOrderByRegYmdDescRegYmdtDesc()
-			.stream().map(tilog -> {
-				if (!Objects.isNull(tiler)) {
-					boolean isLiked = likesRepository.findByTilerAndTilog(tiler, tilog).isPresent();
-					boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(tiler, tilog).isPresent();
-
-					return TilogInfo.of(tilog, isLiked, isBookmarked);
-				}
-
-				return TilogInfo.from(tilog);
-			}).collect(Collectors.toList());
+			.stream().map(tilog -> getTilogInfo(loginUser, tilog))
+			.collect(Collectors.toList());
 
 		// TODO: 인기글은 캐싱 필요
 		List<TilogInfo> popularList = allTilerInfo.stream()
@@ -151,6 +138,17 @@ public class TilogService {
 			.popularList(popularList)
 			.tilogList(tilogInfoList)
 			.build();
+	}
+
+	private TilogInfo getTilogInfo(LoginUser loginUser, Tilog tilog) {
+		if (!Objects.isNull(loginUser)) {
+			boolean isLiked = likesRepository.findByTilerAndTilog(loginUser.getUser(), tilog).isPresent();
+			boolean isBookmarked = bookmarkRepository.findByTilerAndTilog(loginUser.getUser(), tilog).isPresent();
+
+			return TilogInfo.of(tilog, isLiked, isBookmarked);
+		}
+
+		return TilogInfo.from(tilog);
 	}
 
 }

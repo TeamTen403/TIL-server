@@ -19,6 +19,7 @@ public interface TilogRepository extends JpaRepository<Tilog, Long> {
 	@Query("UPDATE Tilog t SET t.likes = t.likes + 1 WHERE t.id = :id")
 	int incrementLikes(Long id);
 
+	@Modifying(clearAutomatically = true)
 	@Query("UPDATE Tilog t SET t.likes = t.likes - 1 WHERE t.id = :id")
 	int decrementLikes(Long id);
 
