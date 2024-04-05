@@ -35,7 +35,7 @@ public class LoginUser implements UserDetails {
 			user,
 			authorities);
 	}
-
+	
 	@Override
 	public String getUsername() {
 		return email;

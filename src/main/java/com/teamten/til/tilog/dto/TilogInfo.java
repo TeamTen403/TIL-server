@@ -16,8 +16,8 @@ public class TilogInfo implements Serializable {
 	private long tilogId;
 	@Schema(description = "틸로그 제목", defaultValue = "틸로그 제목")
 	private String title;
-	@Schema(description = "글쓴이 ID", defaultValue = "글쓴이 ID")
-	private String tilerId;
+	@Schema(description = "글쓴이 이메일", defaultValue = "글쓴이 에메일")
+	private String tilerEmail;
 	@Schema(description = "닉네임", defaultValue = "닉네임")
 	private String nickname;
 	@Schema(description = "썸네일 URL", defaultValue = "https://teamten403.kr.object.ncloudstorage.com/tilog/fc89acb0-3aa4-4f3c-b821-6c6da62a175d.png")
@@ -40,6 +40,7 @@ public class TilogInfo implements Serializable {
 			.tilogId(tilog.getId())
 			.title(tilog.getTitle())
 			.nickname(tilog.getTiler().getNickname())
+			.tilerEmail(tilog.getTiler().getEmail())
 			.thumbnailUrl(tilog.getThumbnail())
 			.tagName(tilog.getTagName())
 			.likeCount(tilog.getLikes())
@@ -55,6 +56,7 @@ public class TilogInfo implements Serializable {
 			.tilogId(tilog.getId())
 			.title(tilog.getTitle())
 			.nickname(tilog.getTiler().getNickname())
+			.tilerEmail(tilog.getTiler().getEmail())
 			.thumbnailUrl(tilog.getThumbnail())
 			.tagName(tilog.getTagName())
 			.likeCount(tilog.getLikes())

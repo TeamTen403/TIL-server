@@ -50,6 +50,16 @@ public class TilogController {
 	private final TagService tagService;
 	private final StorageUploader storageUploader;
 
+	@GetMapping("/{tilogId}")
+	@Operation(description = "Tilog 상세조회")
+	@ApiResponse(responseCode = "200", description = "성공")
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {404, 500})
+	public ResponseEntity<ResponseDto<TilogInfo>> getMonthlyList(
+		@PathVariable Long tilogId, @AuthenticationPrincipal LoginUser loginUser) {
+
+		return ResponseEntity.ok(ResponseDto.ok(tilogService.getById(loginUser, tilogId)));
+	}
+
 	@GetMapping
 	@Operation(description = "월별 Tilog 리스트 조회")
 	@ApiResponse(responseCode = "200", description = "성공")
@@ -70,7 +80,7 @@ public class TilogController {
 	@ApiResponse(responseCode = "200", description = "성공")
 	@ApiErrorResponse(value = ResponseType.class, errorCodes = {400, 500})
 	public ResponseEntity<ResponseDto<FeedResponse>> getFeedList(@AuthenticationPrincipal LoginUser loginUser) {
-		
+
 		return ResponseEntity.ok(ResponseDto.ok(tilogService.getFeed(loginUser)));
 	}
 

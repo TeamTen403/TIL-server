@@ -9,7 +9,6 @@ import com.teamten.til.common.BaseTimeEntity;
 import com.teamten.til.tilog.entity.Bookmark;
 import com.teamten.til.tilog.entity.Tilog;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,7 +43,7 @@ public class Tiler extends BaseTimeEntity {
 	private String nickname;
 	private String profileImage;
 	private String passwd; // 암호화해서 저장
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Job job; // 직무정보
 
 	@JsonIgnore
@@ -52,15 +51,15 @@ public class Tiler extends BaseTimeEntity {
 	private AuthProvider authProvider; // 로그인정보
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler")
 	private List<Tilog> tilogList;
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler")
 	private List<Bookmark> bookmarkList;
 
 	@JsonIgnore
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler", cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tiler")
 	private List<ChallengeParticipant> challengeParticipants;
 
 }

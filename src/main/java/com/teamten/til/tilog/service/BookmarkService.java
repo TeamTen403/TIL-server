@@ -10,6 +10,7 @@ import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
+import com.teamten.til.tiler.repository.TilerRepository;
 import com.teamten.til.tilog.dto.BookmarkResponse;
 import com.teamten.til.tilog.dto.TilogInfo;
 import com.teamten.til.tilog.dto.TilogInfoResponse;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class BookmarkService {
 	private final TilogRepository tilogRepository;
+	private final TilerRepository tilerRepository;
 	private final BookmarkRepository bookmarkRepository;
 	private final LikesRepository likesRepository;
 
@@ -68,7 +70,7 @@ public class BookmarkService {
 
 	@Transactional(readOnly = true)
 	public TilogInfoResponse getAllMyBookmark(LoginUser loginUser) {
-		Tiler tiler = loginUser.getUser();
+		Tiler tiler = tilerRepository.findById(loginUser.getId()).orElseThrow(() -> new NotExistException());
 
 		List<TilogInfo> tilogInfoList = tiler.getBookmarkList()
 			.stream()
