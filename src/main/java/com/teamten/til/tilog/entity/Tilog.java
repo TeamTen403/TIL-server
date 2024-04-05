@@ -28,10 +28,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 public class Tilog extends BaseTimeEntity {
-	public static Tilog createById(Long id) {
-		return Tilog.builder().id(id).build();
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
