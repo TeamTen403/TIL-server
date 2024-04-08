@@ -16,6 +16,8 @@ public class TilogInfo implements Serializable {
 	private long tilogId;
 	@Schema(description = "틸로그 제목", defaultValue = "틸로그 제목")
 	private String title;
+	@Schema(description = "틸로그 내용", defaultValue = "틸로그 내용")
+	private String content;
 	@Schema(description = "글쓴이 이메일", defaultValue = "글쓴이 에메일")
 	private String tilerEmail;
 	@Schema(description = "닉네임", defaultValue = "닉네임")
@@ -39,6 +41,7 @@ public class TilogInfo implements Serializable {
 		return TilogInfo.builder()
 			.tilogId(tilog.getId())
 			.title(tilog.getTitle())
+			.content(tilog.getContent())
 			.nickname(tilog.getTiler().getNickname())
 			.tilerEmail(tilog.getTiler().getEmail())
 			.thumbnailUrl(tilog.getThumbnail())
@@ -55,6 +58,7 @@ public class TilogInfo implements Serializable {
 		return TilogInfo.builder()
 			.tilogId(tilog.getId())
 			.title(tilog.getTitle())
+			.content(tilog.getContent())
 			.nickname(tilog.getTiler().getNickname())
 			.tilerEmail(tilog.getTiler().getEmail())
 			.thumbnailUrl(tilog.getThumbnail())
