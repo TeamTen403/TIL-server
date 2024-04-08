@@ -1,9 +1,8 @@
 package com.teamten.til.tilog.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,23 +26,14 @@ import lombok.RequiredArgsConstructor;
 public class LikesController {
 	private final LikesService likesService;
 
-	@PostMapping("/{tilogId}/like")
-	@Operation(description = "좋아요 저장")
+	@PutMapping("/{tilogId}/like")
+	@Operation(description = "좋아요 저장/취소")
 	@ApiResponse(responseCode = "200", description = "성공")
-	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<LikeResponse>> addLikes(@PathVariable Long tilogId,
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {401, 404, 500})
+	public ResponseEntity<ResponseDto<LikeResponse>> toggleLikes(@PathVariable Long tilogId,
 		@AuthUser LoginUser loginUser) {
 
-		return ResponseEntity.ok(ResponseDto.ok(likesService.addLikes(loginUser, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(likesService.toggleLikes(loginUser, tilogId)));
 	}
 
-	@DeleteMapping("/{tilogId}/like")
-	@Operation(description = "좋아요 취소")
-	@ApiResponse(responseCode = "200", description = "성공")
-	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<LikeResponse>> removeLikes(@PathVariable Long tilogId,
-		@AuthUser LoginUser loginUser) {
-
-		return ResponseEntity.ok(ResponseDto.ok(likesService.removeLikes(loginUser, tilogId)));
-	}
 }
