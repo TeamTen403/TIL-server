@@ -1,10 +1,9 @@
 package com.teamten.til.tilog.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,24 +28,14 @@ import lombok.RequiredArgsConstructor;
 public class BookmarkController {
 	private final BookmarkService bookmarkService;
 
-	@PostMapping("/{tilogId}/bookmark")
-	@Operation(description = "북마크 저장")
+	@PutMapping("/{tilogId}/bookmark")
+	@Operation(description = "북마크 저장/취소")
 	@ApiResponse(responseCode = "200", description = "성공")
-	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 404, 500})
-	public ResponseEntity<ResponseDto<BookmarkResponse>> addBookmark(@PathVariable Long tilogId,
+	@ApiErrorResponse(value = ResponseType.class, errorCodes = {401, 404, 500})
+	public ResponseEntity<ResponseDto<BookmarkResponse>> toggleLikes(@PathVariable Long tilogId,
 		@AuthUser LoginUser loginUser) {
 
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.addBookmark(loginUser, tilogId)));
-	}
-
-	@DeleteMapping("/{tilogId}/bookmark")
-	@Operation(description = "북마크 취소")
-	@ApiResponse(responseCode = "200", description = "성공")
-	@ApiErrorResponse(value = ResponseType.class, errorCodes = {201, 401, 500})
-	public ResponseEntity<ResponseDto<BookmarkResponse>> removeBookmark(@PathVariable Long tilogId,
-		@AuthUser LoginUser loginUser) {
-
-		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.removeBookmark(loginUser, tilogId)));
+		return ResponseEntity.ok(ResponseDto.ok(bookmarkService.toggleBookmark(loginUser, tilogId)));
 	}
 
 	@GetMapping("/bookmark")

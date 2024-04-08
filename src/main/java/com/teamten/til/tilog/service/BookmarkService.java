@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.teamten.til.common.exception.DuplicatedException;
 import com.teamten.til.common.exception.NotExistException;
 import com.teamten.til.tiler.entity.LoginUser;
 import com.teamten.til.tiler.entity.Tiler;
@@ -31,41 +30,32 @@ public class BookmarkService {
 	private final LikesRepository likesRepository;
 
 	@Transactional
-	public BookmarkResponse addBookmark(LoginUser loginUser, Long tilogId) {
+	public BookmarkResponse toggleBookmark(LoginUser loginUser, Long tilogId) {
 		Tiler tiler = loginUser.getUser();
 
 		Tilog tilog = tilogRepository.findById(tilogId)
 			.orElseThrow(() -> new NotExistException());
+		
+		return bookmarkRepository.findByTilerAndTilog(tiler, tilog)
+			.stream()
+			.map(bookmark -> {
+				bookmarkRepository.deleteById(bookmark.getId());
 
-		bookmarkRepository.findByTilerAndTilog(tiler, tilog).ifPresent(likes -> {
-			throw new DuplicatedException();
-		});
+				return BookmarkResponse.builder()
+					.tilogId(tilogId)
+					.isBookmarked(false)
+					.build();
+			}).findFirst()
+			.orElseGet(() -> {
+				Bookmark bookmark = Bookmark.builder().tiler(tiler).tilog(tilog).build();
 
-		Bookmark bookmark = Bookmark.builder().tiler(tiler).tilog(tilog).build();
-		bookmarkRepository.save(bookmark);
+				bookmarkRepository.save(bookmark);
 
-		return BookmarkResponse.builder()
-			.tilogId(tilogId)
-			.isBookmarked(true)
-			.build();
-	}
-
-	@Transactional
-	public BookmarkResponse removeBookmark(LoginUser loginUser, Long tilogId) {
-		Tiler tiler = loginUser.getUser();
-
-		Tilog tilog = tilogRepository.findById(tilogId)
-			.orElseThrow(() -> new NotExistException());
-
-		Bookmark bookmark = bookmarkRepository.findByTilerAndTilog(tiler, tilog)
-			.orElseThrow(() -> new DuplicatedException());
-
-		bookmarkRepository.deleteById(bookmark.getId());
-
-		return BookmarkResponse.builder()
-			.tilogId(tilogId)
-			.isBookmarked(false)
-			.build();
+				return BookmarkResponse.builder()
+					.tilogId(tilogId)
+					.isBookmarked(false)
+					.build();
+			});
 	}
 
 	@Transactional(readOnly = true)
