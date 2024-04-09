@@ -26,7 +26,7 @@ public class LikesService {
 		Tilog tilog = tilogRepository.findById(tilogId).orElseThrow(() -> new NotExistException());
 
 		return likesRepository.findByTilerAndTilog(tiler, tilog)
-			.stream().map(likes -> {
+			.map(likes -> {
 				likesRepository.deleteById(likes.getId());
 				tilogRepository.decrementLikes(tilogId);
 
@@ -35,7 +35,7 @@ public class LikesService {
 					.likes(tilog.getLikes() - 1)
 					.isLiked(false)
 					.build();
-			}).findFirst().orElseGet(() -> {
+			}).orElseGet(() -> {
 				Likes likes = Likes.builder().tilog(tilog).tiler(tiler).build();
 
 				likesRepository.save(likes);

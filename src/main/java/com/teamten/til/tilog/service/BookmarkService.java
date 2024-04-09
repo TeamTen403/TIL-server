@@ -35,9 +35,8 @@ public class BookmarkService {
 
 		Tilog tilog = tilogRepository.findById(tilogId)
 			.orElseThrow(() -> new NotExistException());
-		
+
 		return bookmarkRepository.findByTilerAndTilog(tiler, tilog)
-			.stream()
 			.map(bookmark -> {
 				bookmarkRepository.deleteById(bookmark.getId());
 
@@ -45,7 +44,7 @@ public class BookmarkService {
 					.tilogId(tilogId)
 					.isBookmarked(false)
 					.build();
-			}).findFirst()
+			})
 			.orElseGet(() -> {
 				Bookmark bookmark = Bookmark.builder().tiler(tiler).tilog(tilog).build();
 
