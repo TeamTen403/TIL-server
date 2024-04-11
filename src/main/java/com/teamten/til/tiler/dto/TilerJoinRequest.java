@@ -14,7 +14,7 @@ public class TilerJoinRequest {
 	private String passwd;
 	private String nickName;
 	private String profileImage;
-	private String jobId;
+	private String job;
 	private AuthProvider authProvider = AuthProvider.TIL_EMAIL;
 
 }

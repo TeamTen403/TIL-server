@@ -79,7 +79,7 @@ public class TilerService {
 			.email(request.getEmail())
 			.passwd(encoder.encode(request.getPasswd()))
 			.nickname(request.getNickName())
-			.job(Job.builder().id(request.getJobId()).build())
+			.job(Job.builder().id(request.getJob()).build())
 			.profileImage(request.getProfileImage())
 			.authProvider(request.getAuthProvider())
 			.build();
