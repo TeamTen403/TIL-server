@@ -27,8 +27,8 @@ public class LikesService {
 
 		return likesRepository.findByTilerAndTilog(tiler, tilog)
 			.map(likes -> {
-				likesRepository.deleteById(likes.getId());
 				tilogRepository.decrementLikes(tilogId);
+				likesRepository.deleteById(likes.getId());
 
 				return LikeResponse.builder()
 					.tilogId(tilogId)
@@ -38,8 +38,8 @@ public class LikesService {
 			}).orElseGet(() -> {
 				Likes likes = Likes.builder().tilog(tilog).tiler(tiler).build();
 
-				likesRepository.save(likes);
 				tilogRepository.incrementLikes(tilogId);
+				likesRepository.save(likes);
 
 				return LikeResponse.builder()
 					.tilogId(tilogId)

@@ -52,7 +52,7 @@ public class BookmarkService {
 
 				return BookmarkResponse.builder()
 					.tilogId(tilogId)
-					.isBookmarked(false)
+					.isBookmarked(true)
 					.build();
 			});
 	}
