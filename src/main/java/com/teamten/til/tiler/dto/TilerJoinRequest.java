@@ -2,6 +2,7 @@ package com.teamten.til.tiler.dto;
 
 import com.teamten.til.tiler.entity.AuthProvider;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -12,7 +13,8 @@ import lombok.ToString;
 public class TilerJoinRequest {
 	private String email;
 	private String passwd;
-	private String nickname;
+	@Column(name = "nickname")
+	private String nickName;
 	private String profileImage;
 	private String jobId;
 	private AuthProvider authProvider = AuthProvider.TIL_EMAIL;

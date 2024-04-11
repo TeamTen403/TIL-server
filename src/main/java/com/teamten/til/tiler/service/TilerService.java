@@ -78,7 +78,7 @@ public class TilerService {
 		Tiler tiler = Tiler.builder()
 			.email(request.getEmail())
 			.passwd(encoder.encode(request.getPasswd()))
-			.nickname(request.getNickname())
+			.nickname(request.getNickName())
 			.job(Job.builder().id(request.getJobId()).build())
 			.profileImage(request.getProfileImage())
 			.authProvider(request.getAuthProvider())
